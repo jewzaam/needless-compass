@@ -5,24 +5,19 @@
  */
 package org.namal.needless.compass;
 
+import java.math.BigDecimal;
+
 /**
+ * Just to make it obvious in other code instead of peppering source with BigDecimal.
  *
  * @author nmalik
  */
-public class Sites {
-    private Site[] sites;
-
-    /**
-     * @return the sites
-     */
-    public Site[] getSites() {
-        return sites;
+public class Score extends BigDecimal {
+    public Score(String val) {
+        super(val);
     }
 
-    /**
-     * @param sites the sites to set
-     */
-    public void setSites(Site[] sites) {
-        this.sites = sites;
+    public Score(double val) {
+        super(val);
     }
 }

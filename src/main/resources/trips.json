@@ -2,9 +2,10 @@
     "trips": [
         {
             "name": "Coffee Shop",
-            "waypoints": [
+            "categoryNames": [
                 "coffee"
-            ]
+            ],
+            "frequency": 1
         }
     ]
 }
