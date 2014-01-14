@@ -1,0 +1,15 @@
+{
+    "sites": [
+        {
+            "name": "Aversboro Coffee",
+            "category": "coffee",
+            "coordinates": [
+                {
+                    "latitude": "35.694953",
+                    "longitude": "-78.616225",
+                    "address": "1401 Aversboro Rd, Garner, NC 27529"
+                }
+            ]
+        }
+    ]
+}

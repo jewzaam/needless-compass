@@ -1,0 +1,10 @@
+{
+    "trips": [
+        {
+            "name": "Coffee Shop",
+            "waypoints": [
+                "coffee"
+            ]
+        }
+    ]
+}
