@@ -1,0 +1,12 @@
+{
+    "houses": [
+        {
+            "site": {
+                "name": "80 Sophia Ln",
+                "latitude": "35.548648",
+                "longitude": "-78.57628",
+                "address": "80 Sophia Ln, Willow Spring, NC 27592"
+            }
+        }
+    ]
+}
