@@ -24,13 +24,20 @@ public class Waypoint {
     public Waypoint(Site current, Waypoint previous) {
         this.current = current;
         this.previous = previous;
+
+        if (this.previous != null) {
+            this.previous.addNext(this);
+        }
     }
 
-    public Waypoint(Site current, Waypoint previous, Set<Waypoint> next) {
-        this(current, previous);
-        if (next != null && !next.isEmpty()) {
-            this.next.addAll(next);
-        }
+    /**
+     * Create a waypoint without a previous location. Use this constructor to create a starting point for waypoint
+     * chains.
+     *
+     * @param current
+     */
+    public Waypoint(Site current) {
+        this(current, null);
     }
 
     /**
@@ -48,15 +55,17 @@ public class Waypoint {
      * @return the score
      */
     public Score getScore() {
-        if (null == score
-                && null != previous
-                && null != current) {
-            double lat1 = Math.toRadians(previous.getCurrent().getLatitude().doubleValue());
-            double lon1 = Math.toRadians(previous.getCurrent().getLongitude().doubleValue());
-            double lat2 = Math.toRadians(current.getLatitude().doubleValue());
-            double lon2 = Math.toRadians(current.getLongitude().doubleValue());
-            // http://www.movable-type.co.uk/scripts/latlong.html (Equirectangular approximation)
-            this.score = new Score(Math.sqrt(Math.pow((lon2 - lon1) * Math.cos((lat1 + lat2) / 2), 2) + Math.pow(lat2 - lat1, 2)) * 6371);
+        if (null == score) {
+            if (null != previous && null != current) {
+                double lat1 = Math.toRadians(previous.getCurrent().getLatitude().doubleValue());
+                double lon1 = Math.toRadians(previous.getCurrent().getLongitude().doubleValue());
+                double lat2 = Math.toRadians(current.getLatitude().doubleValue());
+                double lon2 = Math.toRadians(current.getLongitude().doubleValue());
+                // http://www.movable-type.co.uk/scripts/latlong.html (Equirectangular approximation)
+                score = new Score(Math.sqrt(Math.pow((lon2 - lon1) * Math.cos((lat1 + lat2) / 2), 2) + Math.pow(lat2 - lat1, 2)) * 6371);
+            } else {
+                score = new Score("0");
+            }
         }
         return score;
     }
@@ -80,7 +89,7 @@ public class Waypoint {
     /**
      * @param n the next to set
      */
-    public void addNext(Waypoint n) {
+    private void addNext(Waypoint n) {
         this.next.add(n);
     }
 }

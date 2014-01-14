@@ -5,19 +5,28 @@
  */
 package org.namal.needless.compass;
 
-import java.math.BigDecimal;
-
 /**
  * Just to make it obvious in other code instead of peppering source with BigDecimal.
  *
  * @author nmalik
  */
-public class Score extends BigDecimal {
+public class Score {
+    double value;
+
     public Score(String val) {
-        super(val);
+        value = Double.valueOf(val);
     }
 
     public Score(double val) {
-        super(val);
+        value = val;
+    }
+
+    public double doubleValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return Double.toString(value);
     }
 }

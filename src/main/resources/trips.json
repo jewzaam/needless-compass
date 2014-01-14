@@ -6,6 +6,72 @@
                 "coffee"
             ],
             "frequency": 1
+        },
+        {
+            "name": "Work Crafts",
+            "categoryNames": [
+                "work",
+                "workshop"
+            ],
+            "frequency": 1
+        },
+        {
+            "name": "Shopping",
+            "categoryNames": [
+                "shopping"
+            ],
+            "frequency": 2
+        },
+        {
+            "name": "Work Normal",
+            "categoryNames": [
+                "work"
+            ],
+            "frequency": 2
+        },
+        {
+            "name": "Grocery",
+            "categoryNames": [
+                "grocery"
+            ],
+            "frequency": 2
+        },
+        {
+            "name": "BJ's",
+            "categoryNames": [
+                "warehouse"
+            ],
+            "frequency": 0.25
+        },
+        {
+            "name": "MOPS",
+            "categoryNames": [
+                "mops"
+            ],
+            "frequency": 0.5
+        },
+        {
+            "name": "College",
+            "categoryNames": [
+                "college",
+                "daycare"
+            ],
+            "frequency": 2
+        },
+        {
+            "name": "Work Daycare",
+            "categoryNames": [
+                "daycare",
+                "work"
+            ],
+            "frequency": 2
+        },
+        {
+            "name": "Park",
+            "categoryNames": [
+                "park"
+            ],
+            "frequency": 0.66
         }
     ]
 }

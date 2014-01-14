@@ -5,8 +5,8 @@
  */
 package org.namal.needless.compass;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  *
@@ -17,9 +17,9 @@ public class House {
     private Score score;
 
     /**
-     * For each trip, create a set of waypoints that realize all the waypoint combos possible.
+     * For each trip, the starting dummy "house" waypoint. Each waypoint has child (next) waypoints.
      */
-    private Map<Trip, Set<Waypoint>> paths;
+    private transient final Map<Trip, Waypoint> paths = new HashMap<>();
 
     /**
      * @return the site
@@ -52,14 +52,14 @@ public class House {
     /**
      * @return the paths
      */
-    public Map<Trip, Set<Waypoint>> getPaths() {
+    public Map<Trip, Waypoint> getPaths() {
         return paths;
     }
 
     /**
      * @param paths the paths to set
      */
-    public void setPaths(Map<Trip, Set<Waypoint>> paths) {
-        this.paths = paths;
+    public void addPath(Trip trip, Waypoint waypoint) {
+        paths.put(trip, waypoint);
     }
 }

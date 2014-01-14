@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.namal.needless.compass;
 
 import java.math.BigDecimal;
@@ -73,5 +72,5 @@ public class Site {
     public void setName(String name) {
         this.name = name;
     }
-    
+
 }
