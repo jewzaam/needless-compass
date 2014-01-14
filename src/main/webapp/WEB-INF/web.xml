@@ -14,6 +14,14 @@
         <servlet-name>health</servlet-name>
         <url-pattern>/health</url-pattern>
     </servlet-mapping>
-         
+    <filter>
+        <!-- https://github.com/ebay/cors-filter for details and additional parameters -->
+        <filter-name>CORS Filter</filter-name>
+        <filter-class>org.ebaysf.web.cors.CORSFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>CORS Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 </web-app>
 

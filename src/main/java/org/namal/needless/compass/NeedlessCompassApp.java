@@ -67,7 +67,7 @@ public class NeedlessCompassApp {
         }
     }
 
-    public void process() {
+    public String process() {
         // for each house + trip find all categories that satisfy the waypoint needs and then compute final best (lowest) score
         for (House house : houses.getHouses()) {
             for (Trip trip : trips.getTrips()) {
@@ -93,7 +93,7 @@ public class NeedlessCompassApp {
         }
 
         Gson g = new Gson();
-        System.out.println(g.toJson(houses));
+        return g.toJson(houses);
     }
 
     /**
@@ -141,7 +141,7 @@ public class NeedlessCompassApp {
         NeedlessCompassApp app = new NeedlessCompassApp();
         try {
             app.initialize();
-            app.process();
+            System.out.println(app.process());
         } catch (IOException e) {
             System.err.println("Failed to start application:");
             e.printStackTrace();;
