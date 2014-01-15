@@ -17,17 +17,17 @@ import org.junit.Test;
  *
  * @author nmalik
  */
-public class CategoriesTest {
+public class SitesTest {
 
     @Test
-    public void loadSites() throws IOException {
-        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("categories.json");
+    public void load() throws IOException {
+        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("sites.json");
                 InputStreamReader isr = new InputStreamReader(is, Charset.defaultCharset())) {
             Gson g = new Gson();
-            Categories categories = g.fromJson(isr, Categories.class);
-            Assert.assertNotNull(categories);
-            Assert.assertNotNull(categories.getCategories());
-            Assert.assertTrue(categories.getCategories().length > 0);
+            Sites sites = g.fromJson(isr, Sites.class);
+            Assert.assertNotNull(sites);
+            Assert.assertNotNull(sites.getSites());
+            Assert.assertTrue(sites.getSites().length > 0);
         }
     }
 }

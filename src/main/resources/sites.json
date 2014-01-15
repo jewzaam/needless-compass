@@ -1,0 +1,184 @@
+{
+    "sites": [
+        {
+            "name": "Aversboro Coffee",
+            "categories": [
+                "coffee"
+            ],
+            "latitude": "35.694953",
+            "longitude": "-78.616225",
+            "address": "1401 Aversboro Rd, Garner, NC 27529"
+        },
+        {
+            "name": "New World Coffee House",
+            "categories": [
+                "coffee"
+            ],
+            "latitude": "35.860353",
+            "longitude": "-78.704655",
+            "address": "4112 Pleasant Valley Rd, Ste 124, Raleigh, NC 27612"
+        },
+        {
+            "name": "Coffee & Crepes",
+            "categories": [
+                "coffee"
+            ],
+            "latitude": "35.761151",
+            "longitude": "-78.73792",
+            "address": "213 Crossroads Blvd, Crossroads Plaza, Cary, NC 27518"
+        },
+        {
+            "name": "Red Hat Tower",
+            "categories": [
+                "work"
+            ],
+            "latitude": "35.775425",
+            "longitude": "-78.638089",
+            "address": "100 E Davie St, Raleigh, NC 27601"
+        },
+        {
+            "name": "NCSU Workshop",
+            "categories": [
+                "workshop"
+            ],
+            "latitude": "35.782767",
+            "longitude": "-78.667008",
+            "address": "2241 Dunn Ave, North Carolina State University, Raleigh, NC 27606"
+        },
+        {
+            "name": "Wake Tech",
+            "categories": [
+                "college"
+            ],
+            "latitude": "35.650819",
+            "longitude": "-78.70398",
+            "address": "9101 Fayetteville Rd, Raleigh, NC 27603"
+        },
+        {
+            "name": "Johnson Pond",
+            "categories": [
+                "daycare"
+            ],
+            "latitude": "35.606246",
+            "longitude": "-78.756524",
+            "address": "6523 Johnson Pond Rd, Fuquay-Varina, NC 27526"
+        },
+        {
+            "name": "Lowes Food",
+            "categories": [
+                "grocery"
+            ],
+            "latitude": "35.591824",
+            "longitude": "-78.601613",
+            "address": "7265 N Carolina 42, Raleigh, NC 27603"
+        },
+        {
+            "name": "Lowes Food",
+            "categories": [
+                "grocery"
+            ],
+            "latitude": "35.68586",
+            "longitude": "-78.616668",
+            "address": "791 Timber Dr, Garner, NC 27529"
+        },
+        {
+            "name": "Lowes Food",
+            "categories": [
+                "grocery"
+            ],
+            "latitude": "35.745746",
+            "longitude": "-78.761389",
+            "address": "6430 Tryon Road, Cary, NC 27513"
+        },
+        {
+            "name": "Lowes Food",
+            "categories": [
+                "grocery"
+            ],
+            "latitude": "35.736968",
+            "longitude": "-78.866356",
+            "address": "5400 Apex Peakway, Apex, NC"
+        },
+        {
+            "name": "Lowes Food",
+            "categories": [
+                "grocery"
+            ],
+            "latitude": "35.788067",
+            "longitude": "-78.826757",
+            "address": "930 High House Rd, Cary, NC"
+        },
+        {
+            "name": "Lowes Food",
+            "categories": [
+                "grocery"
+            ],
+            "latitude": "35.703966",
+            "longitude": "-78.793777",
+            "address": "3480 Kildaire Farm Rd, Cary, NC"
+        },
+        {
+            "name": "MOPS",
+            "categories": [
+                "mops"
+            ],
+            "latitude": "35.786705",
+            "longitude": "-78.780364",
+            "address": "117 S Academy St, Cary, NC 27511"
+        },
+        {
+            "name": "Lake Benson Park",
+            "categories": [
+                "park"
+            ],
+            "latitude": "35.673779",
+            "longitude": "-78.627983",
+            "address": "921 Buffaloe Rd, Garner, NC"
+        },
+        {
+            "name": "Target",
+            "categories": [
+                "shopping"
+            ],
+            "latitude": "35.687235",
+            "longitude": "-78.579714",
+            "address": "1040 Timber Dr E, Garner, NC 27529"
+        },
+        {
+            "name": "Target",
+            "categories": [
+                "shopping"
+            ],
+            "latitude": "35.715559",
+            "longitude": "-78.638926",
+            "address": "2700 Timber Dr, Garner, NC 27529"
+        },
+        {
+            "name": "Target",
+            "categories": [
+                "shopping"
+            ],
+            "latitude": "35.757483",
+            "longitude": "-78.737975",
+            "address": "2021 Walnut St, Cary, NC 27518"
+        },
+        {
+            "name": "BJ's Warehouse",
+            "categories": [
+                "warehouse"
+            ],
+            "latitude": "35.691041",
+            "longitude": "-78.578884",
+            "address": "255 Shenstone Ln, Garner, NC"
+        },
+        {
+            "name": "Gymboree Play & Music",
+            "categories": [
+                "gymnastics"
+            ],
+            "latitude": "35.886629",
+            "longitude": "-78.660624",
+            "address": "7713 Lead Mine Rd, Raleigh, NC"
+        }
+    ]
+}

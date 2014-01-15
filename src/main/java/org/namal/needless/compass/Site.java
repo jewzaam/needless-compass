@@ -13,6 +13,7 @@ import java.math.BigDecimal;
  */
 public class Site {
     private String name;
+    private String[] categories;
     private BigDecimal latitude;
     private BigDecimal longitude;
     private String address;
@@ -71,6 +72,20 @@ public class Site {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * @return the categories
+     */
+    public String[] getCategories() {
+        return categories;
+    }
+
+    /**
+     * @param categories the categories to set
+     */
+    public void setCategories(String[] categories) {
+        this.categories = categories;
     }
 
 }

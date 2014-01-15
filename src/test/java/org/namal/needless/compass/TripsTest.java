@@ -18,9 +18,8 @@ import org.junit.Test;
  * @author nmalik
  */
 public class TripsTest {
-
     @Test
-    public void loadTrips() throws IOException {
+    public void load() throws IOException {
         try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("trips.json");
                 InputStreamReader isr = new InputStreamReader(is, Charset.defaultCharset())) {
             Gson g = new Gson();

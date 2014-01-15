@@ -9,20 +9,20 @@ package org.namal.needless.compass;
  *
  * @author nmalik
  */
-public class Categories {
-    private Category[] categories;
+public class Sites {
+    private Site[] sites;
 
     /**
-     * @return the categories
+     * @return the sites
      */
-    public Category[] getCategories() {
-        return categories;
+    public Site[] getSites() {
+        return sites;
     }
 
     /**
-     * @param categories the categories to set
+     * @param sites the sites to set
      */
-    public void setCategories(Category[] categories) {
-        this.categories = categories;
+    public void setSites(Site[] sites) {
+        this.sites = sites;
     }
 }

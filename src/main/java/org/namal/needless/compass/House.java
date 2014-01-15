@@ -12,28 +12,13 @@ import java.util.Map;
  *
  * @author nmalik
  */
-public class House {
-    private Site site;
+public class House extends Site {
     private Score score;
-
     /**
-     * For each trip, the starting dummy "house" waypoint. Each waypoint has child (next) waypoints.
+     * For each trip, the starting dummy "house" waypoint. Each waypoint has
+     * child (next) waypoints.
      */
     private transient final Map<Trip, Waypoint> paths = new HashMap<>();
-
-    /**
-     * @return the site
-     */
-    public Site getSite() {
-        return site;
-    }
-
-    /**
-     * @param site the site to set
-     */
-    public void setSite(Site site) {
-        this.site = site;
-    }
 
     /**
      * @return the score

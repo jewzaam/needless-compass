@@ -6,6 +6,7 @@
 package org.namal.needless.compass;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -21,23 +22,21 @@ import java.util.Set;
  * @author nmalik
  */
 public class NeedlessCompassApp {
-    private Categories categories;
+    private Sites sites;
     private Houses houses;
     private Trips trips;
-
-    private Map<String, Set<Category>> categoryMap;
+    private Map<String, Set<Site>> categorySiteMap;
 
     public NeedlessCompassApp() {
-
     }
 
     public void initialize() throws IOException {
-        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("categories.json");
+        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("sites.json");
                 InputStreamReader isr = new InputStreamReader(is, Charset.defaultCharset())) {
             Gson g = new Gson();
-            categories = g.fromJson(isr, Categories.class);
-            if (null == categories || categories.getCategories().length <= 0) {
-                throw new IllegalStateException("No categories found!");
+            sites = g.fromJson(isr, Sites.class);
+            if (null == sites || sites.getSites().length <= 0) {
+                throw new IllegalStateException("No sites found!");
             }
         }
         try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("houses.json");
@@ -57,13 +56,15 @@ public class NeedlessCompassApp {
             }
         }
 
-        categoryMap = new HashMap<>();
+        categorySiteMap = new HashMap<>();
 
-        for (Category category : categories.getCategories()) {
-            if (!categoryMap.containsKey(category.getName())) {
-                categoryMap.put(category.getName(), new HashSet<Category>());
+        for (Site site : sites.getSites()) {
+            for (String category : site.getCategories()) {
+                if (!categorySiteMap.containsKey(category)) {
+                    categorySiteMap.put(category, new HashSet<Site>());
+                }
+                categorySiteMap.get(category).add(site);
             }
-            categoryMap.get(category.getName()).add(category);
         }
     }
 
@@ -72,7 +73,7 @@ public class NeedlessCompassApp {
         for (House house : houses.getHouses()) {
             for (Trip trip : trips.getTrips()) {
                 // reset current site to house and create starting waypoint (as 'previous')
-                Waypoint currentWaypoint = new Waypoint(house.getSite());
+                Waypoint currentWaypoint = new Waypoint(house);
 
                 house.addPath(trip, currentWaypoint);
 
@@ -92,13 +93,13 @@ public class NeedlessCompassApp {
             house.setScore(new Score(score));
         }
 
-        Gson g = new Gson();
+        Gson g = new GsonBuilder().setPrettyPrinting().create();
         return g.toJson(houses);
     }
 
     /**
-     * Recursively add next waypoints to current waypoint starting at given cateogry name index and ending with the
-     * given house.
+     * Recursively add next waypoints to current waypoint starting at given
+     * cateogry name index and ending with the given house.
      *
      * @param current
      * @param categoryNames
@@ -106,19 +107,17 @@ public class NeedlessCompassApp {
      */
     public void addWaypoints(House house, Waypoint current, String[] categoryNames, int categoryNameIndex) {
         if (categoryNameIndex >= categoryNames.length) {
-            Waypoint childWaypoint = new Waypoint(house.getSite(), current);
+            Waypoint childWaypoint = new Waypoint(house, current);
             return;
         }
 
-        if (!categoryMap.containsKey(categoryNames[categoryNameIndex])) {
+        if (!categorySiteMap.containsKey(categoryNames[categoryNameIndex])) {
             throw new IllegalStateException("Unable to find category data: " + categoryNames[categoryNameIndex]);
         }
 
-        for (Category category : categoryMap.get(categoryNames[categoryNameIndex])) {
-            for (Site categorySite : category.getSites()) {
-                Waypoint childWaypoint = new Waypoint(categorySite, current);
-                addWaypoints(house, childWaypoint, categoryNames, categoryNameIndex + 1);
-            }
+        for (Site site : categorySiteMap.get(categoryNames[categoryNameIndex])) {
+            Waypoint childWaypoint = new Waypoint(site, current);
+            addWaypoints(house, childWaypoint, categoryNames, categoryNameIndex + 1);
         }
     }
 
