@@ -1,17 +1,18 @@
-package org.namal.needless.compass;
+package org.namal.needless.compass.rest;
 
 import java.io.IOException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import org.namal.needless.compass.app.TestApp;
 
 /**
  * Simple service to test out NewRelic custom metrics.
  *
  * @author nmalik
  */
-@Path("/needless-compass")
-public class NeedlessCompassResource {
-
+@Path("/nc")
+public class RestResource {
     /**
      * Increment the given number
      *
@@ -19,9 +20,10 @@ public class NeedlessCompassResource {
      * @return the new value
      */
     @GET
-    @Path("/")
+    @Path("/data")
+    @Produces("application/json")
     public String data() throws IOException {
-        NeedlessCompassApp app = new NeedlessCompassApp();
+        TestApp app = new TestApp();
         app.initialize();
         return app.process();
     }

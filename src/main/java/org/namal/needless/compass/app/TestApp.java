@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.namal.needless.compass;
+package org.namal.needless.compass.app;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -16,18 +16,28 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
+import java.util.TreeSet;
+import org.namal.needless.compass.model.House;
+import org.namal.needless.compass.model.Houses;
+import org.namal.needless.compass.model.Score;
+import org.namal.needless.compass.model.Site;
+import org.namal.needless.compass.model.Sites;
+import org.namal.needless.compass.model.Trip;
+import org.namal.needless.compass.model.Trips;
+import org.namal.needless.compass.model.Waypoint;
 
 /**
  *
  * @author nmalik
  */
-public class NeedlessCompassApp {
+public class TestApp {
     private Sites sites;
     private Houses houses;
     private Trips trips;
     private Map<String, Set<Site>> categorySiteMap;
 
-    public NeedlessCompassApp() {
+    public TestApp() {
     }
 
     public void initialize() throws IOException {
@@ -86,15 +96,15 @@ public class NeedlessCompassApp {
             double score = 0;
             for (Trip trip : paths.keySet()) {
                 Waypoint root = paths.get(trip);
-                double s = computeMinScore(root) * trip.getFrequency().doubleValue();
-                score += s;
-                // System.out.println(house.getSite().getName() + " | " + trip.getName() + " | " + s);
+                score += (computeMinScore(root) * trip.getFrequency().doubleValue());
             }
             house.setScore(new Score(score));
         }
 
         Gson g = new GsonBuilder().setPrettyPrinting().create();
-        return g.toJson(houses);
+        String jsonString = g.toJson(houses);
+
+        return jsonString;
     }
 
     /**
@@ -122,22 +132,28 @@ public class NeedlessCompassApp {
     }
 
     public double computeMinScore(Waypoint wp) {
-        Iterator<Waypoint> children = wp.getNext();
-        double minScore = 0.0;
-        while (children.hasNext()) {
-            double s = computeMinScore(children.next());
-            if (0 == minScore) {
-                minScore = s;
+        // collect sorted set of leaf waypoints. first will be smallest score
+        Set<Waypoint> leafs = new TreeSet<>();
+
+        Stack<Iterator<Waypoint>> stack = new Stack<>();
+        stack.push(wp.iterator());
+
+        while (!stack.empty() && stack.peek().hasNext()) {
+            Waypoint child = stack.peek().next();
+            child.getScore(); // for now just to prime the score
+            if (child.getNext().isEmpty()) {
+                leafs.add(child);
+                stack.pop();
             } else {
-                minScore = Math.min(minScore, s);
+                stack.push(child.iterator());
             }
         }
 
-        return minScore + wp.getScore().doubleValue();
+        return leafs.isEmpty() ? 0.0 : leafs.iterator().next().getScore().doubleValue();
     }
 
     public static void main(String[] args) {
-        NeedlessCompassApp app = new NeedlessCompassApp();
+        TestApp app = new TestApp();
         try {
             app.initialize();
             System.out.println(app.process());

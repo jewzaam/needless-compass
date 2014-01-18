@@ -3,10 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.namal.needless.compass;
+package org.namal.needless.compass.model;
 
 /**
- * Just to make it obvious in other code instead of peppering source with BigDecimal.
+ * Just to make it obvious in other code instead of peppering source with
+ * BigDecimal.
  *
  * @author nmalik
  */

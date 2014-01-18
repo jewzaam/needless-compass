@@ -3,14 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.namal.needless.compass;
+package org.namal.needless.compass.model;
 
 import java.math.BigDecimal;
 
 /**
- * For a trip we only care about all legs of the journey. It may be that one possible path seems good but a longer trip
- * to subsequent waypoints might make it worse. ASSUMPTION: won't use same category in a way point more than once in a
- * trip.
+ * For a trip we only care about all legs of the journey. It may be that one
+ * possible path seems good but a longer trip to subsequent waypoints might make
+ * it worse. ASSUMPTION: won't use same category in a way point more than once
+ * in a trip.
  *
  * @author nmalik
  */
@@ -60,5 +61,4 @@ public class Trip {
     public void setFrequency(BigDecimal frequency) {
         this.frequency = frequency;
     }
-
 }

@@ -3,22 +3,23 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.namal.needless.compass;
+package org.namal.needless.compass.model;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.List;
 
 /**
- * An instance of a site that came from some location and therefore has a score. Can have child sites that are potential
- * targets for the next leg of the journey.
+ * An instance of a site that came from some location and therefore has a score.
+ * Can have child sites that are potential targets for the next leg of the
+ * journey.
  *
  * @author nmalik
  */
-public class Waypoint {
+public class Waypoint implements Comparable<Waypoint> {
     private final Site current;
     private final Waypoint previous;
-    private final Set<Waypoint> next = new HashSet<>();
+    private final List<Waypoint> next = new ArrayList<>();
     private Score score;
 
     public Waypoint(Site current, Waypoint previous) {
@@ -31,8 +32,8 @@ public class Waypoint {
     }
 
     /**
-     * Create a waypoint without a previous location. Use this constructor to create a starting point for waypoint
-     * chains.
+     * Create a waypoint without a previous location. Use this constructor to
+     * create a starting point for waypoint chains.
      *
      * @param current
      */
@@ -50,7 +51,8 @@ public class Waypoint {
     }
 
     /**
-     * Get the score from the previous site to the current site. Computes the score if it hasn't been computed yet.
+     * Get the score from the previous site to the current site. Computes the
+     * score if it hasn't been computed yet.
      *
      * @return the score
      */
@@ -62,7 +64,7 @@ public class Waypoint {
                 double lat2 = Math.toRadians(current.getLatitude().doubleValue());
                 double lon2 = Math.toRadians(current.getLongitude().doubleValue());
                 // http://www.movable-type.co.uk/scripts/latlong.html (Equirectangular approximation)
-                score = new Score(Math.sqrt(Math.pow((lon2 - lon1) * Math.cos((lat1 + lat2) / 2), 2) + Math.pow(lat2 - lat1, 2)) * 6371);
+                score = new Score(getPrevious().getScore().doubleValue() + Math.sqrt(Math.pow((lon2 - lon1) * Math.cos((lat1 + lat2) / 2), 2) + Math.pow(lat2 - lat1, 2)) * 6371);
             } else {
                 score = new Score("0");
             }
@@ -82,8 +84,12 @@ public class Waypoint {
     /**
      * @return the next
      */
-    public Iterator<Waypoint> getNext() {
+    public Iterator<Waypoint> iterator() {
         return next.iterator();
+    }
+
+    public List<Waypoint> getNext() {
+        return next;
     }
 
     /**
@@ -91,5 +97,19 @@ public class Waypoint {
      */
     private void addNext(Waypoint n) {
         this.next.add(n);
+    }
+
+    @Override
+    public int compareTo(Waypoint o) {
+        if (null == o) {
+            return 1;
+        }
+        if (getScore().doubleValue() > o.getScore().doubleValue()) {
+            return 1;
+        } else if (getScore().doubleValue() == o.getScore().doubleValue()) {
+            return 0;
+        } else {
+            return -1;
+        }
     }
 }
