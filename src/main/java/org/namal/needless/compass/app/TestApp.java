@@ -7,9 +7,15 @@ package org.namal.needless.compass.app;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,6 +33,8 @@ import org.namal.needless.compass.model.Sites;
 import org.namal.needless.compass.model.Trip;
 import org.namal.needless.compass.model.Trips;
 import org.namal.needless.compass.model.Waypoint;
+import org.namal.needless.compass.model.google.Geocode;
+import org.namal.needless.compass.model.google.Result;
 
 /**
  *
@@ -90,10 +98,13 @@ public class TestApp {
         TreeSet<House> sortedHouses = new TreeSet<>();
         sortedHouses.addAll(Arrays.asList(houses.getHouses()));
 
-        Gson g = new GsonBuilder().setPrettyPrinting().create();
-        String jsonString = g.toJson(sortedHouses);
+        return prettyJson(sortedHouses);
+    }
+    
+    private static final Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
 
-        return jsonString;
+    public static String prettyJson(Object o) {
+        return prettyGson.toJson(o);
     }
 
     public void process(House house) {
@@ -162,11 +173,47 @@ public class TestApp {
         return leafs.isEmpty() ? 0.0 : leafs.iterator().next().getScore().doubleValue();
     }
 
+    public static House createHouseFromAddress(String streetAddress) throws MalformedURLException, IOException {
+        String urlString = "http://maps.googleapis.com/maps/api/geocode/json?sensor=false&address=" + URLEncoder.encode(streetAddress, "UTF-8");
+        URL url = new URL(urlString);
+        URLConnection con = url.openConnection();
+
+        StringBuilder buff = new StringBuilder();
+
+        try (InputStream is = con.getInputStream();
+                InputStreamReader isr = new InputStreamReader(is, Charset.defaultCharset());
+                BufferedReader reader = new BufferedReader(isr)) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                buff.append(line).append("\n");
+            }
+        }
+
+        String jsonString = buff.toString();
+        Gson g = new Gson();
+        Geocode geocode = g.fromJson(jsonString, Geocode.class);
+
+        if (!"OK".equals(geocode.getStatus())) {
+            throw new RuntimeException("Status from geocode API not OK: " + jsonString);
+        }
+
+        House house = new House();
+        // use only first result,
+        Result result = geocode.getResults()[0];
+        house.setAddress(result.getFormatted_address());
+        house.setLatitude(new BigDecimal(result.getGeometry().getLocation().getLat()));
+        house.setLongitude(new BigDecimal(result.getGeometry().getLocation().getLng()));
+        house.setName(streetAddress);
+
+        return house;
+    }
+
     public static void main(String[] args) {
         TestApp app = new TestApp();
         try {
-            app.initialize();
-            System.out.println(app.process());
+//            app.initialize();
+//            System.out.println(app.process());
+            System.out.println(new Gson().toJson(createHouseFromAddress("Raleigh NC")));
         } catch (IOException e) {
             System.err.println("Failed to start application:");
             e.printStackTrace();;
