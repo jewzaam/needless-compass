@@ -34,18 +34,18 @@
                         result.addClass('invalid').text('Address is required!');
                         return;
                     }
-                    console.log("clicked: " + address);
+//                    console.log("clicked: " + address);
                     $.ajax('rest/nc/score?address=' + address, {
                         dataType: 'json',
                         data: {},
                         type: 'GET',
                         success: function(data) {
-                            console.log("success: " + data.result);
-                            $('#result').text('Success!');
+//                            console.log("success: " + data.result);
+                            $('#result').text('<br>' + data.address + " | " data.score.value);
                         }
                     })
                             .error(function() {
-                                console.log("error");
+//                                console.log("error");
                                 $('#result').text('Error!');
                             });
                 });

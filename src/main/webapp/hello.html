@@ -31,7 +31,7 @@ $( document ).ready( function() {
         result.removeClass( 'invalid' );
 
         if( !name || !name.length ) {
-            result.addClass( 'invalid' ).text( 'A name is required!' );
+            result.addClass( 'invalid' ).text( '<br>A name is required!' );
             return;
         }
         //console.log("clicked: " + name);
@@ -41,7 +41,7 @@ $( document ).ready( function() {
             type:'GET',
             success:function ( data ) {
                 //console.log("success: " + data.result);
-                $( '#result' ).text( data.result );
+                $( '#result' ).text("<br>" + data.result );
             }
         })
         .error( function() {
