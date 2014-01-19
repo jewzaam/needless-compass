@@ -16,8 +16,8 @@ public class RestResource {
     /**
      * Increment the given number
      *
-     * @param number the number to increment
-     * @return the new value
+     * @return all houses with calculated scores
+     * @throws java.io.IOException
      */
     @GET
     @Path("/data")
