@@ -30,11 +30,11 @@
 
                     result.removeClass('invalid');
 
-                    if (!name || !name.length) {
+                    if (!address || !address.length) {
                         result.addClass('invalid').text('Address is required!');
                         return;
                     }
-                    //console.log("clicked: " + name);
+                    //console.log("clicked: " + address);
                     $.ajax('rest/nc/score?address=' + address, {
                         dataType: 'json',
                         data: {},
@@ -45,7 +45,7 @@
                         }
                     })
                             .error(function() {
-                                //console.log("error");
+                                $('#result').text('Error!');
                             });
                 });
             }); // (document).ready
@@ -57,7 +57,7 @@
             <fieldset>
                 <label for="address" id="address_label">Address</label>
                 <input name="address" id="address" type="text" required placeholder="Raleigh, NC"/>
-                <input type="submit" id="score" value="Raleigh, NC"/><span id="result"></span>
+                <input type="submit" id="score" value="Score!"/><span id="result"></span>
             </fieldset>
         </form>
 
