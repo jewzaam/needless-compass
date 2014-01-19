@@ -16,51 +16,50 @@
 -->
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Score: Ajax</title>
-        <link rel="stylesheet" href="css/styles.css"/>
-        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        <script type="text/javascript">
-            $(document).ready(function() {
-                $('#score').click(function(event) {
-                    event.preventDefault();
+<head>
+<title>HTML5 + REST Hello World</title>
+<link rel="stylesheet" href="css/styles.css"/>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript">
+$( document ).ready( function() {
+    $( '#sayHello' ).click( function( event ) {
+        event.preventDefault();
 
-                    var result = $('#result'),
-                            address = $.trim($('#address').val());
+        var result = $( '#result' ),
+            name = $.trim( $( '#name' ).val() );
 
-                    result.removeClass('invalid');
+        result.removeClass( 'invalid' );
 
-                    if (!address || !address.length) {
-                        result.addClass('invalid').text('Address is required!');
-                        return;
-                    }
-//                    console.log("clicked: " + address);
-                    $.ajax('rest/nc/score?address=' + address, {
-                        dataType: 'json',
-                        data: {},
-                        type: 'GET',
-                        success: function(data) {
-//                            console.log("success: " + data.result);
-                            $('#result').text('<br>' + data.address + " | " data.score.value);
-                        }
-                    })
-                            .error(function() {
-//                                console.log("error");
-                                $('#result').text('Error!');
-                            });
-                });
-            }); // (document).ready
-        </script>
-    </head>
-    <body>
-        Needless Compass<br>
-        <form name="theForm">
-            <fieldset>
-                <label for="address" id="address_label">Address</label>
-                <input name="address" id="address" type="text" required placeholder="Raleigh, NC"/>
-                <input type="submit" id="score" value="Score!"/><span id="result"></span>
-            </fieldset>
-        </form>
+        if( !name || !name.length ) {
+            result.addClass( 'invalid' ).text( '<br>A name is required!' );
+            return;
+        }
+        //console.log("clicked: " + name);
+        $.ajax( 'rest/nc/score', {
+            dataType:'json',
+            data:{address:name},
+            type:'GET',
+            success:function ( data ) {
+                //console.log("success: " + data.result);
+                $( '#result' ).text("<br>" + data.score.value );
+            }
+        })
+        .error( function() {
+            //console.log("error");
+        });
+    });
+}); // (document).ready
+</script>
+</head>
+<body>
+HTML5 + REST Hello World<br>
+<form name="theForm">
+    <fieldset>
+        <label for="name" id="name_label">Name</label>
+        <input name="name" id="name" type="text" required placeholder="Your Name"/>
+        <input type="submit" id="sayHello" value="Say Hello"/><span id="result"></span>
+    </fieldset>
+</form>
 
-    </body>
+</body>
 </html>
