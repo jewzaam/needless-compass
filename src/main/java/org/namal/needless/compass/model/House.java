@@ -12,7 +12,8 @@ import java.util.Map;
  *
  * @author nmalik
  */
-public class House extends Site {
+public class House extends Site implements Comparable<House> {
+
     private Score score;
     /**
      * For each trip, the starting dummy "house" waypoint. Each waypoint has
@@ -46,5 +47,13 @@ public class House extends Site {
      */
     public void addPath(Trip trip, Waypoint waypoint) {
         paths.put(trip, waypoint);
+    }
+
+    @Override
+    public int compareTo(House t) {
+        if (null == t) {
+            return 1;
+        }
+        return getScore().compareTo(t.getScore());
     }
 }

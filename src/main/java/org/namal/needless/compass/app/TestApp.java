@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -32,6 +33,7 @@ import org.namal.needless.compass.model.Waypoint;
  * @author nmalik
  */
 public class TestApp {
+
     private Sites sites;
     private Houses houses;
     private Trips trips;
@@ -101,8 +103,12 @@ public class TestApp {
             house.setScore(new Score(score));
         }
 
+        // sorted output
+        TreeSet<House> sortedHouses = new TreeSet<>();
+        sortedHouses.addAll(Arrays.asList(houses.getHouses()));
+        
         Gson g = new GsonBuilder().setPrettyPrinting().create();
-        String jsonString = g.toJson(houses);
+        String jsonString = g.toJson(sortedHouses);
 
         return jsonString;
     }

@@ -11,7 +11,8 @@ package org.namal.needless.compass.model;
  *
  * @author nmalik
  */
-public class Score {
+public class Score implements Comparable<Score> {
+
     double value;
 
     public Score(String val) {
@@ -29,5 +30,19 @@ public class Score {
     @Override
     public String toString() {
         return Double.toString(value);
+    }
+
+    @Override
+    public int compareTo(Score t) {
+        if (null == t) {
+            return 1;
+        }
+        if (doubleValue() > t.doubleValue()) {
+            return 1;
+        } else if (doubleValue() == t.doubleValue()) {
+            return 0;
+        } else {
+            return -1;
+        }
     }
 }

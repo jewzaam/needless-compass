@@ -104,12 +104,6 @@ public class Waypoint implements Comparable<Waypoint> {
         if (null == o) {
             return 1;
         }
-        if (getScore().doubleValue() > o.getScore().doubleValue()) {
-            return 1;
-        } else if (getScore().doubleValue() == o.getScore().doubleValue()) {
-            return 0;
-        } else {
-            return -1;
-        }
+        return getScore().compareTo(o.getScore());
     }
 }
