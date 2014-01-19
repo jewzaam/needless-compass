@@ -83,34 +83,38 @@ public class TestApp {
     public String process() {
         // for each house + trip find all categories that satisfy the waypoint needs and then compute final best (lowest) score
         for (House house : houses.getHouses()) {
-            for (Trip trip : trips.getTrips()) {
-                // reset current site to house and create starting waypoint (as 'previous')
-                Waypoint currentWaypoint = new Waypoint(house);
-
-                house.addPath(trip, currentWaypoint);
-
-                addWaypoints(house, currentWaypoint, trip.getCategoryNames(), 0);
-            }
-            // got a bunch 'o data, now figure out a score for this house!
-            // get the lowest score from each of the first children of the path's waypoint
-
-            Map<Trip, Waypoint> paths = house.getPaths();
-            double score = 0;
-            for (Trip trip : paths.keySet()) {
-                Waypoint root = paths.get(trip);
-                score += (computeMinScore(root) * trip.getFrequency().doubleValue());
-            }
-            house.setScore(new Score(score));
+            process(house);
         }
 
         // sorted output
         TreeSet<House> sortedHouses = new TreeSet<>();
         sortedHouses.addAll(Arrays.asList(houses.getHouses()));
-        
+
         Gson g = new GsonBuilder().setPrettyPrinting().create();
         String jsonString = g.toJson(sortedHouses);
 
         return jsonString;
+    }
+
+    public void process(House house) {
+        for (Trip trip : trips.getTrips()) {
+            // reset current site to house and create starting waypoint (as 'previous')
+            Waypoint currentWaypoint = new Waypoint(house);
+
+            house.addPath(trip, currentWaypoint);
+
+            addWaypoints(house, currentWaypoint, trip.getCategoryNames(), 0);
+        }
+        // got a bunch 'o data, now figure out a score for this house!
+        // get the lowest score from each of the first children of the path's waypoint
+
+        Map<Trip, Waypoint> paths = house.getPaths();
+        double score = 0;
+        for (Trip trip : paths.keySet()) {
+            Waypoint root = paths.get(trip);
+            score += (computeMinScore(root) * trip.getFrequency().doubleValue());
+        }
+        house.setScore(new Score(score));
     }
 
     /**
