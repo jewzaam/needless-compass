@@ -26,22 +26,22 @@ $( document ).ready( function() {
         event.preventDefault();
 
         var result = $( '#result' ),
-            name = $.trim( $( '#name' ).val() );
+            streetAddress = $.trim( $( '#streetAddress' ).val() );
 
         result.removeClass( 'invalid' );
 
-        if( !name || !name.length ) {
-            result.addClass( 'invalid' ).text( '<br>A name is required!' );
+        if( !streetAddress || !streetAddress.length ) {
+            result.addClass( 'invalid' ).text( '<br>A street address is required!' );
             return;
         }
         //console.log("clicked: " + name);
         $.ajax( 'rest/nc/score', {
             dataType:'json',
-            data:{address:name},
+            data:{address:streetAddress},
             type:'GET',
             success:function ( data ) {
                 //console.log("success: " + data.result);
-                $( '#result' ).text("<br>" + data.score.value );
+                $( '#result' ).html("<b>Address</b>: " + data.address + "<br><b>Score</b>: " + data.score.value );
             }
         })
         .error( function() {
@@ -52,12 +52,13 @@ $( document ).ready( function() {
 </script>
 </head>
 <body>
-HTML5 + REST Hello World<br>
+Needless Compass<br>
 <form name="theForm">
     <fieldset>
-        <label for="name" id="name_label">Name</label>
-        <input name="name" id="name" type="text" required placeholder="Your Name"/>
-        <input type="submit" id="sayHello" value="Say Hello"/><span id="result"></span>
+        <label for="streetAddress" id="streetAddress_label">Street Address</label><br>
+        <input name="streetAddress" id="streetAddress" type="text" size="100%" required placeholder="The address"/><br>
+        <input type="submit" id="sayHello" value="Score!"/><br>
+        <span id="result"></span>
     </fieldset>
 </form>
 
