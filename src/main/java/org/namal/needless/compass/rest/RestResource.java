@@ -1,5 +1,6 @@
 package org.namal.needless.compass.rest;
 
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import javax.ws.rs.Consumes;
@@ -61,13 +62,15 @@ public class RestResource {
     @PUT
     @Path("/site")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void addSite(@QueryParam("address") String streetAddress, @QueryParam("categories") String categories) throws MalformedURLException, IOException {
+    @Produces(MediaType.APPLICATION_JSON)
+    public String addSite(String siteJson) throws MalformedURLException, IOException {
+        Gson g = new Gson();
+        Site s = g.fromJson(siteJson, Site.class);
         TestApp app = new TestApp();
         app.initialize();
-        Site site = TestApp.createSiteFromAddress(streetAddress);
-        if (categories != null) {
-            site.setCategories(categories.split(","));
-        }
+        Site site = TestApp.createSiteFromAddress(s.getAddress());
+        site.setCategories(s.getCategories());
         MongoManager.createSite(site);
+        return TestApp.prettyJson(site);
     }
 }

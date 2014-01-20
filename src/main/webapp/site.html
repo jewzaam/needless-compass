@@ -17,7 +17,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Needless Compass: Site</title>
+<title>Needless Compass</title>
 <link rel="stylesheet" href="css/styles.css"/>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript">
@@ -26,32 +26,27 @@ $( document ).ready( function() {
         event.preventDefault();
 
         var result = $( '#result' ),
-            streetAddress = $.trim( $( '#streetAddress' ).val() ),
-            categories = $.trip( $( '#categories' ).val());
-
+            streetAddress = $.trim( $( '#streetAddress' ).val() );
+            
         result.removeClass( 'invalid' );
 
         if( !streetAddress || !streetAddress.length ) {
             result.addClass( 'invalid' ).text( '<br>A street address is required!' );
             return;
         }
-        if( !categories || !categories.length ) {
-            result.addClass( 'invalid' ).html('<br>At least one category is required!');
-            return;
-        }
-        console.log("clicked: " + streetAddress);
+        //console.log("clicked: " + name);
         $.ajax( 'rest/nc/site', {
             dataType:'json',
-            data:{address:streetAddress,categories:categories},
+            content:"{address:"+streetAddress+"}",
             type:'PUT',
+            contentType: 'application/json',
             success:function ( data ) {
-                console.log("success");
-                $( '#result' ).html("Created or updated site: " + streetAddress );
+                //console.log("success: " + data.result);
+                $( '#result' ).html("Success!");
             }
         })
         .error( function() {
-            console.log("error");
-            $( '#result' ).html("ERROR");
+            //console.log("error");
         });
     });
 }); // (document).ready
@@ -59,14 +54,11 @@ $( document ).ready( function() {
 </head>
 <body>
 Needless Compass: Site<br>
-Enter an address to add below and corresponding categories separated by commas (,).<br>
 <form name="theForm">
     <fieldset>
         <label for="streetAddress" id="streetAddress_label">Street Address</label><br>
         <input name="streetAddress" id="streetAddress" type="text" size="100" required placeholder="The address"/><br>
-        <label for="categories" id="categories_label">Categories</label><br>
-        <input name="categories" id="categories" type="text" size="100" required placeholder="Categories"/><br>
-        <input type="submit" id="sayHello" value="Upsert"/><br>
+        <input type="submit" id="sayHello" value="Score!"/><br>
         <span id="result"></span>
     </fieldset>
 </form>
