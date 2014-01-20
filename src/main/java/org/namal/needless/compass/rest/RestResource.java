@@ -2,13 +2,18 @@ package org.namal.needless.compass.rest;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.namal.needless.compass.app.TestApp;
 import org.namal.needless.compass.model.House;
+import org.namal.needless.compass.model.Site;
+import org.namal.needless.compass.model.Sites;
+import org.namal.needless.compass.mongo.MongoManager;
 
 /**
  * Simple service to test out NewRelic custom metrics.
@@ -43,5 +48,26 @@ public class RestResource {
         app.process(house);
 
         return TestApp.prettyJson(house);
+    }
+
+    @GET
+    @Path("/sites")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getSites() {
+        Sites sites = MongoManager.loadSites();
+        return TestApp.prettyJson(sites);
+    }
+
+    @PUT
+    @Path("/site")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void addSite(@QueryParam("address") String streetAddress, @QueryParam("categories") String categories) throws MalformedURLException, IOException {
+        TestApp app = new TestApp();
+        app.initialize();
+        Site site = TestApp.createSiteFromAddress(streetAddress);
+        if (categories != null) {
+            site.setCategories(categories.split(","));
+        }
+        MongoManager.createSite(site);
     }
 }

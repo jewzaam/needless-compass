@@ -100,7 +100,7 @@ public class TestApp {
 
         return prettyJson(sortedHouses);
     }
-    
+
     private static final Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
 
     public static String prettyJson(Object o) {
@@ -206,6 +206,41 @@ public class TestApp {
         house.setName(streetAddress);
 
         return house;
+    }
+
+    public static Site createSiteFromAddress(String streetAddress) throws MalformedURLException, IOException {
+        String urlString = "http://maps.googleapis.com/maps/api/geocode/json?sensor=false&address=" + URLEncoder.encode(streetAddress, "UTF-8");
+        URL url = new URL(urlString);
+        URLConnection con = url.openConnection();
+
+        StringBuilder buff = new StringBuilder();
+
+        try (InputStream is = con.getInputStream();
+                InputStreamReader isr = new InputStreamReader(is, Charset.defaultCharset());
+                BufferedReader reader = new BufferedReader(isr)) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                buff.append(line).append("\n");
+            }
+        }
+
+        String jsonString = buff.toString();
+        Gson g = new Gson();
+        Geocode geocode = g.fromJson(jsonString, Geocode.class);
+
+        if (!"OK".equals(geocode.getStatus())) {
+            throw new RuntimeException("Status from geocode API not OK: " + jsonString);
+        }
+
+        Site site = new Site();
+        // use only first result,
+        Result result = geocode.getResults()[0];
+        site.setAddress(result.getFormatted_address());
+        site.setLatitude(new BigDecimal(result.getGeometry().getLocation().getLat()));
+        site.setLongitude(new BigDecimal(result.getGeometry().getLocation().getLng()));
+        site.setName(streetAddress);
+
+        return site;
     }
 
     public static void main(String[] args) {
