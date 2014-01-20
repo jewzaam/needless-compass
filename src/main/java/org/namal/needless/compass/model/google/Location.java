@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.namal.needless.compass.model.google;
 
 /**
@@ -12,7 +11,7 @@ package org.namal.needless.compass.model.google;
  */
 public class Location {
     private String lat;
-    private String lng; 
+    private String lng;
 
     /**
      * @return the lat

@@ -26,14 +26,14 @@ import org.namal.needless.compass.model.Sites;
  * @author jewzaam
  */
 public class MongoManager {
-
+    
     private static final String COLLECTION_SITE = "site";
     private static final String COLLECTION_HOUSE = "house";
     private static final String COLLECTION_TRIP = "trip";
-
+    
     private static MongoClient client;
     private static DB db;
-
+    
     private static synchronized void initialize() {
         if (null != db) {
             return;
@@ -46,11 +46,11 @@ public class MongoManager {
         }
         String user = System.getenv("OPENSHIFT_MONGODB_DB_USERNAME");
         String password = System.getenv("OPENSHIFT_MONGODB_DB_PASSWORD");
-
+        
         try {
             if (dbHost != null) {
                 int port = Integer.decode(dbPort);
-
+                
                 client = new MongoClient(dbHost, port);
                 db = client.getDB(dbName);
                 if (db.authenticate(user, password.toCharArray()) == false) {
@@ -63,8 +63,15 @@ public class MongoManager {
         } catch (UnknownHostException ex) {
             throw new RuntimeException("Unable to configure mongo", ex);
         }
-    }
 
+        // and now initialize collections and ensure constraints
+        DBCollection siteColl = db.getCollection(COLLECTION_SITE);
+        BasicDBObject siteUK = new BasicDBObject("longitude", 1)
+                .append("latitude", 1)
+                .append("unique", true);
+        siteColl.createIndex(siteUK);
+    }
+    
     public static void createSite(Site site) {
         if (null == db) {
             initialize();
@@ -73,25 +80,29 @@ public class MongoManager {
             db.requestStart();
             DBCollection coll = db.getCollection(COLLECTION_SITE);
             BasicDBObject dbSite = new BasicDBObject();
-
+            
             dbSite.put("address", site.getAddress());
-
-            if (site.getCategories() != null && site.getCategories().length == 0) {
+            
+            if (site.getCategories() != null && site.getCategories().length > 0) {
                 BasicDBList dbCategories = new BasicDBList();
                 dbCategories.addAll(Arrays.asList(site.getCategories()));
                 dbSite.put("categories", dbCategories);
             }
-
+            
             dbSite.put("latitude", site.getLatitude().toString());
             dbSite.put("longitude", site.getLongitude().toString());
             dbSite.put("name", site.getName());
-
-            coll.insert(dbSite);
+            
+            BasicDBObject query = new BasicDBObject();
+            query.put("longitude", site.getLongitude().toString());
+            query.put("latitude", site.getLatitude().toString());
+            
+            coll.update(query, dbSite, true, false);
         } finally {
             db.requestDone();
         }
     }
-
+    
     public static Sites loadSites() {
         if (null == db) {
             initialize();
@@ -109,16 +120,20 @@ public class MongoManager {
                 site.setLatitude(new BigDecimal((String) obj.get("latitude")));
                 site.setLongitude(new BigDecimal((String) obj.get("longitude")));
                 site.setName((String) obj.get("name"));
-
+                
                 if (obj.get("categories") instanceof Collection) {
-                    site.setCategories((String[]) ((Collection) obj.get("categories")).toArray());
+                    List<String> categories = new ArrayList<>();
+                    for (Object o : (Collection) obj.get("categories")) {
+                        categories.add(o.toString());
+                    }
+                    site.setCategories(categories.toArray(new String[]{}));
                 }
                 siteList.add(site);
             }
         } finally {
             db.requestDone();
         }
-
+        
         Sites sites = new Sites();
         sites.setSites((Site[]) siteList.toArray(new Site[]{}));
         return sites;

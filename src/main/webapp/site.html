@@ -17,7 +17,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>HTML5 + REST Hello World</title>
+<title>Needless Compass: Site</title>
 <link rel="stylesheet" href="css/styles.css"/>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript">
@@ -26,38 +26,48 @@ $( document ).ready( function() {
         event.preventDefault();
 
         var result = $( '#result' ),
-            name = $.trim( $( '#name' ).val() );
+            streetAddress = $.trim( $( '#streetAddress' ).val() ),
+            categories = $.trip( $( '#categories' ).val());
 
         result.removeClass( 'invalid' );
 
-        if( !name || !name.length ) {
-            result.addClass( 'invalid' ).text( '<br>A name is required!' );
+        if( !streetAddress || !streetAddress.length ) {
+            result.addClass( 'invalid' ).text( '<br>A street address is required!' );
             return;
         }
-        //console.log("clicked: " + name);
-        $.ajax( 'rest/json/' + name, {
+        if( !categories || !categories.length ) {
+            result.addClass( 'invalid' ).html('<br>At least one category is required!');
+            return;
+        }
+        console.log("clicked: " + streetAddress);
+        $.ajax( 'rest/nc/site', {
             dataType:'json',
-            data:{},
-            type:'GET',
+            data:{address:streetAddress,categories:categories},
+            type:'PUT',
             success:function ( data ) {
-                //console.log("success: " + data.result);
-                $( '#result' ).text("<br>" + data.result );
+                console.log("success");
+                $( '#result' ).html("Created or updated site: " + streetAddress );
             }
         })
         .error( function() {
-            //console.log("error");
+            console.log("error");
+            $( '#result' ).html("ERROR");
         });
     });
 }); // (document).ready
 </script>
 </head>
 <body>
-HTML5 + REST Hello World<br>
+Needless Compass: Site<br>
+Enter an address to add below and corresponding categories separated by commas (,).<br>
 <form name="theForm">
     <fieldset>
-        <label for="name" id="name_label">Name</label>
-        <input name="name" id="name" type="text" required placeholder="Your Name"/>
-        <input type="submit" id="sayHello" value="Say Hello"/><span id="result"></span>
+        <label for="streetAddress" id="streetAddress_label">Street Address</label><br>
+        <input name="streetAddress" id="streetAddress" type="text" size="100" required placeholder="The address"/><br>
+        <label for="categories" id="categories_label">Categories</label><br>
+        <input name="categories" id="categories" type="text" size="100" required placeholder="Categories"/><br>
+        <input type="submit" id="sayHello" value="Upsert"/><br>
+        <span id="result"></span>
     </fieldset>
 </form>
 
