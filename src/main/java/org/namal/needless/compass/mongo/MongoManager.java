@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import org.namal.needless.compass.model.House;
+import org.namal.needless.compass.model.Houses;
 import org.namal.needless.compass.model.Site;
 import org.namal.needless.compass.model.Sites;
 
@@ -26,14 +28,14 @@ import org.namal.needless.compass.model.Sites;
  * @author jewzaam
  */
 public class MongoManager {
-    
+
     private static final String COLLECTION_SITE = "site";
     private static final String COLLECTION_HOUSE = "house";
     private static final String COLLECTION_TRIP = "trip";
-    
+
     private static MongoClient client;
     private static DB db;
-    
+
     private static synchronized void initialize() {
         if (null != db) {
             return;
@@ -46,11 +48,11 @@ public class MongoManager {
         }
         String user = System.getenv("OPENSHIFT_MONGODB_DB_USERNAME");
         String password = System.getenv("OPENSHIFT_MONGODB_DB_PASSWORD");
-        
+
         try {
             if (dbHost != null) {
                 int port = Integer.decode(dbPort);
-                
+
                 client = new MongoClient(dbHost, port);
                 db = client.getDB(dbName);
                 if (db.authenticate(user, password.toCharArray()) == false) {
@@ -65,13 +67,25 @@ public class MongoManager {
         }
 
         // and now initialize collections and ensure constraints
-        DBCollection siteColl = db.getCollection(COLLECTION_SITE);
-        BasicDBObject siteUK = new BasicDBObject("longitude", 1)
-                .append("latitude", 1)
-                .append("unique", true);
-        siteColl.createIndex(siteUK);
+        { // to have short scope for collection initialization
+            DBCollection siteColl = db.getCollection(COLLECTION_SITE);
+            BasicDBObject siteUK = new BasicDBObject("longitude", 1)
+                    .append("latitude", 1)
+                    .append("owner", 1)
+                    .append("unique", true);
+            siteColl.createIndex(siteUK);
+        }
+
+        { // to have short scope for collection initialization
+            DBCollection houseColl = db.getCollection(COLLECTION_HOUSE);
+            BasicDBObject houseUK = new BasicDBObject("longitude", 1)
+                    .append("latitude", 1)
+                    .append("owner", 1)
+                    .append("unique", true);
+            houseColl.createIndex(houseUK);
+        }
     }
-    
+
     public static void createSite(Site site) {
         if (null == db) {
             initialize();
@@ -80,29 +94,31 @@ public class MongoManager {
             db.requestStart();
             DBCollection coll = db.getCollection(COLLECTION_SITE);
             BasicDBObject dbSite = new BasicDBObject();
-            
+
+            dbSite.put("objectOwner", site.getObjectOwner());
             dbSite.put("address", site.getAddress());
-            
+
             if (site.getCategories() != null && site.getCategories().length > 0) {
                 BasicDBList dbCategories = new BasicDBList();
                 dbCategories.addAll(Arrays.asList(site.getCategories()));
                 dbSite.put("categories", dbCategories);
             }
-            
+
             dbSite.put("latitude", site.getLatitude().toString());
             dbSite.put("longitude", site.getLongitude().toString());
             dbSite.put("name", site.getName());
-            
-            BasicDBObject query = new BasicDBObject();
-            query.put("longitude", site.getLongitude().toString());
-            query.put("latitude", site.getLatitude().toString());
-            
+
+            BasicDBObject query = new BasicDBObject()
+                    .append("objectOwner", site.getObjectOwner())
+                    .append("longitude", site.getLongitude().toString())
+                    .append("latitude", site.getLatitude().toString());
+
             coll.update(query, dbSite, true, false);
         } finally {
             db.requestDone();
         }
     }
-    
+
     public static Sites loadSites() {
         if (null == db) {
             initialize();
@@ -116,11 +132,12 @@ public class MongoManager {
             while (cur.hasNext()) {
                 Site site = new Site();
                 DBObject obj = cur.next();
+                site.setObjectOwner((String) obj.get("objectOwner"));
                 site.setAddress((String) obj.get("address"));
                 site.setLatitude(new BigDecimal((String) obj.get("latitude")));
                 site.setLongitude(new BigDecimal((String) obj.get("longitude")));
                 site.setName((String) obj.get("name"));
-                
+
                 if (obj.get("categories") instanceof Collection) {
                     List<String> categories = new ArrayList<>();
                     for (Object o : (Collection) obj.get("categories")) {
@@ -133,9 +150,64 @@ public class MongoManager {
         } finally {
             db.requestDone();
         }
-        
+
         Sites sites = new Sites();
         sites.setSites((Site[]) siteList.toArray(new Site[]{}));
         return sites;
+    }
+
+    public static void createHouse(House house) {
+        if (null == db) {
+            initialize();
+        }
+        try {
+            db.requestStart();
+            DBCollection coll = db.getCollection(COLLECTION_HOUSE);
+            BasicDBObject dbHouse = new BasicDBObject();
+
+            dbHouse.put("objectOwner", house.getObjectOwner());
+            dbHouse.put("address", house.getAddress());
+            dbHouse.put("latitude", house.getLatitude().toString());
+            dbHouse.put("longitude", house.getLongitude().toString());
+            dbHouse.put("name", house.getName());
+
+            BasicDBObject query = new BasicDBObject()
+                    .append("objectOwner", house.getObjectOwner())
+                    .append("longitude", house.getLongitude().toString())
+                    .append("latitude", house.getLatitude().toString());
+
+            coll.update(query, dbHouse, true, false);
+        } finally {
+            db.requestDone();
+        }
+    }
+
+    public static Houses loadHouses() {
+        if (null == db) {
+            initialize();
+        }
+        List<House> houseList = new ArrayList<>();
+        try {
+            db.requestStart();
+            DBCollection coll = db.getCollection(COLLECTION_HOUSE);
+            DBCursor cur = coll.find();
+            // TODO add protection for large set of data
+            while (cur.hasNext()) {
+                House house = new House();
+                DBObject obj = cur.next();
+                house.setObjectOwner((String) obj.get("objectOwner"));
+                house.setAddress((String) obj.get("address"));
+                house.setLatitude(new BigDecimal((String) obj.get("latitude")));
+                house.setLongitude(new BigDecimal((String) obj.get("longitude")));
+                house.setName((String) obj.get("name"));
+                houseList.add(house);
+            }
+        } finally {
+            db.requestDone();
+        }
+
+        Houses houses = new Houses();
+        houses.setHouses((House[]) houseList.toArray(new House[]{}));
+        return houses;
     }
 }

@@ -12,6 +12,7 @@ import java.math.BigDecimal;
  * @author nmalik
  */
 public class Site {
+    private String objectOwner = "default";
     private String name;
     private String[] categories;
     private BigDecimal latitude;
@@ -86,5 +87,19 @@ public class Site {
      */
     public void setCategories(String[] categories) {
         this.categories = categories;
+    }
+
+    /**
+     * @return the objectOwner
+     */
+    public String getObjectOwner() {
+        return objectOwner;
+    }
+
+    /**
+     * @param objectOwner the objectOwner to set
+     */
+    public void setObjectOwner(String objectOwner) {
+        this.objectOwner = objectOwner;
     }
 }

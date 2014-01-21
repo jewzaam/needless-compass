@@ -5,13 +5,14 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.namal.needless.compass.app.TestApp;
 import org.namal.needless.compass.model.House;
+import org.namal.needless.compass.model.Houses;
 import org.namal.needless.compass.model.Site;
 import org.namal.needless.compass.model.Sites;
 import org.namal.needless.compass.mongo.MongoManager;
@@ -23,7 +24,6 @@ import org.namal.needless.compass.mongo.MongoManager;
  */
 @Path("/nc")
 public class RestResource {
-
     /**
      * Increment the given number
      *
@@ -45,9 +45,35 @@ public class RestResource {
     public String score(@QueryParam("address") String streetAddress) throws MalformedURLException, IOException {
         TestApp app = new TestApp();
         app.initialize();
-        House house = TestApp.createHouseFromAddress(streetAddress);
+
+        House house = new House();
+        house.setAddress(streetAddress);
+        TestApp.enrichSite(house);
         app.process(house);
 
+        return TestApp.prettyJson(house);
+    }
+
+    @GET
+    @Path("/houses")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getHouses() {
+        Houses houses = MongoManager.loadHouses();
+        return TestApp.prettyJson(houses);
+    }
+
+    @POST
+    @Path("/house")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String addHouse(String houseJson) throws MalformedURLException, IOException {
+        System.out.println(houseJson);
+        Gson g = new Gson();
+        House house = g.fromJson(houseJson, House.class);
+        TestApp app = new TestApp();
+        app.initialize();
+        TestApp.enrichSite(house);
+        MongoManager.createHouse(house);
         return TestApp.prettyJson(house);
     }
 
@@ -59,17 +85,17 @@ public class RestResource {
         return TestApp.prettyJson(sites);
     }
 
-    @PUT
+    @POST
     @Path("/site")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String addSite(String siteJson) throws MalformedURLException, IOException {
+        System.out.println(siteJson);
         Gson g = new Gson();
-        Site s = g.fromJson(siteJson, Site.class);
+        Site site = g.fromJson(siteJson, Site.class);
         TestApp app = new TestApp();
         app.initialize();
-        Site site = TestApp.createSiteFromAddress(s.getAddress());
-        site.setCategories(s.getCategories());
+        TestApp.enrichSite(site);
         MongoManager.createSite(site);
         return TestApp.prettyJson(site);
     }

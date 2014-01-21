@@ -35,6 +35,7 @@ import org.namal.needless.compass.model.Trips;
 import org.namal.needless.compass.model.Waypoint;
 import org.namal.needless.compass.model.google.Geocode;
 import org.namal.needless.compass.model.google.Result;
+import org.namal.needless.compass.mongo.MongoManager;
 
 /**
  *
@@ -51,22 +52,30 @@ public class TestApp {
     }
 
     public void initialize() throws IOException {
-        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("sites.json");
-                InputStreamReader isr = new InputStreamReader(is, Charset.defaultCharset())) {
-            Gson g = new Gson();
-            sites = g.fromJson(isr, Sites.class);
-            if (null == sites || sites.getSites().length <= 0) {
-                throw new IllegalStateException("No sites found!");
-            }
-        }
-        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("houses.json");
-                InputStreamReader isr = new InputStreamReader(is, Charset.defaultCharset())) {
-            Gson g = new Gson();
-            houses = g.fromJson(isr, Houses.class);
-            if (null == houses || houses.getHouses().length <= 0) {
-                throw new IllegalStateException("No houses found!");
-            }
-        }
+        /*
+         try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("sites.json");
+         InputStreamReader isr = new InputStreamReader(is, Charset.defaultCharset())) {
+         Gson g = new Gson();
+         sites = g.fromJson(isr, Sites.class);
+         if (null == sites || sites.getSites().length <= 0) {
+         throw new IllegalStateException("No sites found!");
+         }
+         }
+         */
+        sites = MongoManager.loadSites();
+
+        /*
+         try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("houses.json");
+         InputStreamReader isr = new InputStreamReader(is, Charset.defaultCharset())) {
+         Gson g = new Gson();
+         houses = g.fromJson(isr, Houses.class);
+         if (null == houses || houses.getHouses().length <= 0) {
+         throw new IllegalStateException("No houses found!");
+         }
+         }
+         */
+        houses = MongoManager.loadHouses();
+
         try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("trips.json");
                 InputStreamReader isr = new InputStreamReader(is, Charset.defaultCharset())) {
             Gson g = new Gson();
@@ -129,8 +138,8 @@ public class TestApp {
     }
 
     /**
-     * Recursively add next waypoints to current waypoint starting at given
-     * cateogry name index and ending with the given house.
+     * Recursively add next waypoints to current waypoint starting at given cateogry name index and ending with the
+     * given house.
      *
      * @param current
      * @param categoryNames
@@ -173,9 +182,16 @@ public class TestApp {
         return leafs.isEmpty() ? 0.0 : leafs.iterator().next().getScore().doubleValue();
     }
 
-    public static House createHouseFromAddress(String streetAddress) throws MalformedURLException, IOException {
-        String urlString = "http://maps.googleapis.com/maps/api/geocode/json?sensor=false&address=" + URLEncoder.encode(streetAddress, "UTF-8");
-        URL url = new URL(urlString);
+    public static void enrichSite(Site site) throws MalformedURLException, IOException {
+        String geocodeApiUrlString;
+        if (site.getAddress() != null && !site.getAddress().isEmpty()) {
+            geocodeApiUrlString = "http://maps.googleapis.com/maps/api/geocode/json?sensor=false&address=" + URLEncoder.encode(site.getAddress(), "UTF-8");
+        } else if (site.getLatitude() != null && site.getLongitude() != null) {
+            geocodeApiUrlString = "http://maps.googleapis.com/maps/api/geocode/json?sensor=false&latlng=" + site.getLatitude().toString() + "," + site.getLongitude().toString();
+        } else {
+            throw new MalformedURLException("Unable to construct URL, must supply either address or latitude/longitude on Site");
+        }
+        URL url = new URL(geocodeApiUrlString);
         URLConnection con = url.openConnection();
 
         StringBuilder buff = new StringBuilder();
@@ -197,50 +213,12 @@ public class TestApp {
             throw new RuntimeException("Status from geocode API not OK: " + jsonString);
         }
 
-        House house = new House();
-        // use only first result,
-        Result result = geocode.getResults()[0];
-        house.setAddress(result.getFormatted_address());
-        house.setLatitude(new BigDecimal(result.getGeometry().getLocation().getLat()));
-        house.setLongitude(new BigDecimal(result.getGeometry().getLocation().getLng()));
-        house.setName(streetAddress);
-
-        return house;
-    }
-
-    public static Site createSiteFromAddress(String streetAddress) throws MalformedURLException, IOException {
-        String urlString = "http://maps.googleapis.com/maps/api/geocode/json?sensor=false&address=" + URLEncoder.encode(streetAddress, "UTF-8");
-        URL url = new URL(urlString);
-        URLConnection con = url.openConnection();
-
-        StringBuilder buff = new StringBuilder();
-
-        try (InputStream is = con.getInputStream();
-                InputStreamReader isr = new InputStreamReader(is, Charset.defaultCharset());
-                BufferedReader reader = new BufferedReader(isr)) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                buff.append(line).append("\n");
-            }
-        }
-
-        String jsonString = buff.toString();
-        Gson g = new Gson();
-        Geocode geocode = g.fromJson(jsonString, Geocode.class);
-
-        if (!"OK".equals(geocode.getStatus())) {
-            throw new RuntimeException("Status from geocode API not OK: " + jsonString);
-        }
-
-        Site site = new Site();
-        // use only first result,
+        // use only first result
         Result result = geocode.getResults()[0];
         site.setAddress(result.getFormatted_address());
         site.setLatitude(new BigDecimal(result.getGeometry().getLocation().getLat()));
         site.setLongitude(new BigDecimal(result.getGeometry().getLocation().getLng()));
-        site.setName(streetAddress);
-
-        return site;
+        site.setName(result.getFormatted_address());
     }
 
     public static void main(String[] args) {
@@ -248,10 +226,13 @@ public class TestApp {
         try {
 //            app.initialize();
 //            System.out.println(app.process());
-            System.out.println(new Gson().toJson(createHouseFromAddress("Raleigh NC")));
+            House house = new House();
+            house.setAddress("Raleigh NC");
+            enrichSite(house);
+            System.out.println(new Gson().toJson(house));
         } catch (IOException e) {
             System.err.println("Failed to start application:");
-            e.printStackTrace();;
+            e.printStackTrace();
         }
     }
 }

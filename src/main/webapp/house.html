@@ -17,7 +17,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Needless Compass</title>
+<title>Needless Compass: House</title>
 <link rel="stylesheet" href="css/styles.css"/>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript">
@@ -26,8 +26,7 @@ $( document ).ready( function() {
         event.preventDefault();
 
         var result = $( '#result' ),
-            streetAddress = $.trim( $( '#streetAddress' ).val() ),
-            categories = $.trim($('#categories').val()).split(",");
+            streetAddress = $.trim( $( '#streetAddress' ).val() );
 
         result.removeClass( 'invalid' );
 
@@ -35,14 +34,12 @@ $( document ).ready( function() {
             result.addClass( 'invalid' ).text( '<br>A street address is required!' );
             return;
         }
-        JSON.stringify
         //console.log("clicked: " + name);
         $.ajax({
-            url:'rest/nc/site',
+            url:'rest/nc/house',
             dataType:'json',
             data:JSON.stringify({
-                "address":streetAddress,
-                "categories":categories
+                "address":streetAddress
             }),
             type:'POST',
             contentType: 'application/json',
@@ -62,13 +59,12 @@ $( document ).ready( function() {
 </script>
 </head>
 <body>
-Needless Compass: Site<br>
+Needless Compass: House<br>
+Enter a street address to add it to the collection of houses.<br>
 <form name="theForm">
     <fieldset>
         <label for="streetAddress" id="streetAddress_label">Street Address</label><br>
         <input name="streetAddress" id="streetAddress" type="text" size="100" required placeholder="The address"/><br>
-        <label for="categories" id="categories_label">Categories</label><br>
-        <input name="categories" id="categories" type="text" size="100" required placeholder="Comma separated list of categories"/><br>
         <input type="submit" id="sayHello" value="Score!"/><br>
         <span id="result"></span>
     </fieldset>
