@@ -16,63 +16,99 @@
 -->
 <!DOCTYPE html>
 <html>
-<head>
-<title>Needless Compass</title>
-<link rel="stylesheet" href="css/styles.css"/>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script type="text/javascript">
-$( document ).ready( function() {
-    $( '#sayHello' ).click( function( event ) {
-        event.preventDefault();
+    <head>
+        <title>Needless Compass</title>
+        <link rel="stylesheet" href="css/styles.css"/>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('#sayHello').click(function(event) {
+                    event.preventDefault();
 
-        var result = $( '#result' ),
-            streetAddress = $.trim( $( '#streetAddress' ).val() ),
-            categories = $.trim($('#categories').val()).split(",");
+                    var result = $('#result'),
+                            categories = $.trim($('#categories').val()),
+                            error = "";
+                    var data = {
+                        "name": $.trim($('#name').val()),
+                        "address": $.trim($('#streetAddress').val())
+                    };
 
-        result.removeClass( 'invalid' );
+                    result.removeClass('invalid');
 
-        if( !streetAddress || !streetAddress.length ) {
-            result.addClass( 'invalid' ).text( '<br>A street address is required!' );
-            return;
-        }
-        JSON.stringify
-        //console.log("clicked: " + name);
-        $.ajax({
-            url:'rest/nc/site',
-            dataType:'json',
-            data:JSON.stringify({
-                "address":streetAddress,
-                "categories":categories
-            }),
-            type:'POST',
-            contentType: 'application/json',
-            beforeSend:function(data) {
-                $( '#result' ).html("Sending...");
-            },
-            success:function ( data ) {
-                //console.log("success: " + data.result);
-                $( '#result' ).html("Success!");
-            }
-        })
-        .error( function() {
-            //console.log("error");
-        });
-    });
-}); // (document).ready
-</script>
-</head>
-<body>
-Needless Compass: Site<br>
-<form name="theForm">
-    <fieldset>
-        <label for="streetAddress" id="streetAddress_label">Street Address</label><br>
-        <input name="streetAddress" id="streetAddress" type="text" size="100" required placeholder="The address"/><br>
-        <label for="categories" id="categories_label">Categories</label><br>
-        <input name="categories" id="categories" type="text" size="100" required placeholder="Comma separated list of categories"/><br>
-        <input type="submit" id="sayHello" value="Score!"/><br>
-        <span id="result"></span>
-    </fieldset>
-</form>
+                    if (!data.name || !data.name.length) {
+                        result.addClass('invalid');
+                        error += '<br>A name is required!';
+                        return;
+                    }
+                    if (!data.address || !data.address.length) {
+                        result.addClass('invalid');
+                        error += '<br>A street address is required!';
+                        return;
+                    }
+                    if (result.hasClass('invalid')) {
+                        result.html(error);
+                        return;
+                    }
+                    if (categories && categories.length) {
+                        data.categories = categories.split(",");
+                    }
 
-</body>
+                    //console.log("clicked: " + name);
+                    $.ajax({
+                        url: 'rest/nc/site',
+                        dataType: 'json',
+                        data: JSON.stringify(data),
+                        type: 'POST',
+                        contentType: 'application/json',
+                        beforeSend: function(data) {
+                            result.html("Sending...");
+                        },
+                        success: function(data) {
+                            //console.log("success: " + data.result);
+                            result.html("Success!");
+                        }
+                    })
+                            .error(function() {
+                                //console.log("error");
+                            });
+                });
+            }); // (document).ready
+        </script>
+    </head>
+    <body>
+        Needless Compass: Site<br>
+        <form name="theForm">
+            <fieldset>
+                <table>
+                    <tr>
+                        <td>
+                            <label for="name" id="name_label">Name</label>
+                        </td>
+                        <td>
+                            <input name="name" id="name" type="text" size="100" required placeholder="The name"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="streetAddress" id="streetAddress_label">Street Address</label>
+                        </td>
+                        <td>
+                            <input name="streetAddress" id="streetAddress" type="text" size="100" required placeholder="The address"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="categories" id="categories_label">Categories</label>
+                        </td>
+                        <td>
+                            <input name="categories" id="categories" type="text" size="100" required placeholder="Comma separated list of categories"/>
+                        </td>
+                    </tr>
+                </table>
+                <input type="submit" id="sayHello" value="Add!"/>
+                <span id="result"></span>
+            </fieldset>
+        </form>
+
+    </body>
 </html>

@@ -16,35 +16,35 @@
 -->
 <!DOCTYPE html>
 <html>
-<head>
-<title>Needless Compass</title>
-<link rel="stylesheet" href="css/styles.css"/>
-<link rel="stylesheet" href="style.css" type="text/css">
+    <head>
+        <title>Needless Compass</title>
+        <link rel="stylesheet" href="css/styles.css"/>
+        <link rel="stylesheet" href="style.css" type="text/css">
 
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script type="text/javascript">
-$( document ).ready( function() {
-    $("#result").html("Loading!");
-    $.get(
-            'rest/nc/data',
-            {},
-            function(data){
-                var text = "";
-                for(var i=0;i < data.length; i++) {
-                    text += (parseInt (data[i].score.value) + " = " + data[i].address + "<br>");
-                }
-                $("#result").html(text);
-            },
-            "json"
-    );
-}); // (document).ready
-</script>
-</head>
-<body>
-Needless Compass: Scores<br>
-Lower score is better, list should be sorted from lowest to highest score.
-<hr>
-<span id="result"></span>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $("#result").html("Loading...");
+                $.get(
+                        'rest/nc/data',
+                        {},
+                        function(data) {
+                            var text = "";
+                            for (var i = 0; i < data.length; i++) {
+                                text += (parseInt(data[i].score.value) + " = " + data[i].address + "<br>");
+                            }
+                            $("#result").html(text);
+                        },
+                        "json"
+                        );
+            }); // (document).ready
+        </script>
+    </head>
+    <body>
+        Needless Compass: Scores<br>
+        Lower score is better, list should be sorted from lowest to highest score.
+        <hr>
+        <span id="result"></span>
 
-</body>
+    </body>
 </html>

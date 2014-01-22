@@ -88,11 +88,13 @@ public class TestApp {
         categorySiteMap = new HashMap<>();
 
         for (Site site : sites.getSites()) {
-            for (String category : site.getCategories()) {
-                if (!categorySiteMap.containsKey(category)) {
-                    categorySiteMap.put(category, new HashSet<Site>());
+            if (site.getCategories() != null) {
+                for (String category : site.getCategories()) {
+                    if (!categorySiteMap.containsKey(category)) {
+                        categorySiteMap.put(category, new HashSet<Site>());
+                    }
+                    categorySiteMap.get(category).add(site);
                 }
-                categorySiteMap.get(category).add(site);
             }
         }
     }
@@ -138,8 +140,8 @@ public class TestApp {
     }
 
     /**
-     * Recursively add next waypoints to current waypoint starting at given cateogry name index and ending with the
-     * given house.
+     * Recursively add next waypoints to current waypoint starting at given
+     * cateogry name index and ending with the given house.
      *
      * @param current
      * @param categoryNames
@@ -218,7 +220,9 @@ public class TestApp {
         site.setAddress(result.getFormatted_address());
         site.setLatitude(new BigDecimal(result.getGeometry().getLocation().getLat()));
         site.setLongitude(new BigDecimal(result.getGeometry().getLocation().getLng()));
-        site.setName(result.getFormatted_address());
+        if (site.getName() == null || site.getName().isEmpty()) {
+            site.setName(result.getFormatted_address());
+        }
     }
 
     public static void main(String[] args) {

@@ -72,6 +72,13 @@
                 "park"
             ],
             "frequency": 0.66
+        },
+        {
+            "name": "Chiropractor",
+            "categoryNames": [
+                "chiropractor"
+            ],
+            "frequency": 0.3
         }
     ]
 }
