@@ -16,51 +16,36 @@
 -->
 <!DOCTYPE html>
 <html>
-<head>
-<title>Needless Compass</title>
-<link rel="stylesheet" href="css/styles.css"/>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script type="text/javascript">
-$( document ).ready( function() {
-    $( '#sayHello' ).click( function( event ) {
-        event.preventDefault();
+    <head>
+        <title>Needless Compass</title>
+        <link rel="stylesheet" href="css/styles.css"/>
+        <link rel="stylesheet" href="style.css" type="text/css">
 
-        var result = $( '#result' ),
-            streetAddress = $.trim( $( '#streetAddress' ).val() );
-
-        result.removeClass( 'invalid' );
-
-        if( !streetAddress || !streetAddress.length ) {
-            result.addClass( 'invalid' ).text( '<br>A street address is required!' );
-            return;
-        }
-        //console.log("clicked: " + name);
-        $.ajax( 'rest/nc/score', {
-            dataType:'json',
-            data:{address:streetAddress},
-            type:'GET',
-            success:function ( data ) {
-                //console.log("success: " + data.result);
-                $( '#result' ).html("<b>Address</b>: " + data.address + "<br><b>Score</b>: " + data.score.value );
-            }
-        })
-        .error( function() {
-            //console.log("error");
-        });
-    });
-}); // (document).ready
-</script>
-</head>
-<body>
-Needless Compass<br>
-<form name="theForm">
-    <fieldset>
-        <label for="streetAddress" id="streetAddress_label">Street Address</label><br>
-        <input name="streetAddress" id="streetAddress" type="text" size="100" required placeholder="The address"/><br>
-        <input type="submit" id="sayHello" value="Score!"/><br>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $("#result").html("Loading...");
+                $.get(
+                        'rest/nc/data',
+                        {},
+                        function(data) {
+                            var text = "";
+                            for (var i = 0; i < data.length; i++) {
+                                text += (parseInt(data[i].score.value) + " = " + data[i].address + "<br>");
+                            }
+                            $("#result").html(text);
+                        },
+                        "json"
+                        );
+            }); // (document).ready
+        </script>
+    </head>
+    <body>
+        Needless Compass: Scores<br>
+        Lower score is better, list should be sorted from lowest to highest score.<br>
+        You can also <a href="house.html">add a house</a> or <a href="site.html">add a site</a>.
+        <hr>
         <span id="result"></span>
-    </fieldset>
-</form>
 
-</body>
+    </body>
 </html>
