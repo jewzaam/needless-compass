@@ -30,7 +30,8 @@
                             error = "";
                     var data = {
                         "name": $.trim($('#name').val()),
-                        "address": $.trim($('#streetAddress').val())
+                        "address": $.trim($('#streetAddress').val()),
+                        "rating": $.trim($('#rating').val())
                     };
 
                     result.removeClass('invalid');
@@ -102,6 +103,14 @@
                         </td>
                         <td>
                             <input name="categories" id="categories" type="text" size="100" required placeholder="Comma separated list of categories"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="rating" id="rating_label">Rating</label>
+                        </td>
+                        <td>
+                            <input name="rating" id="rating" type="text" size="100" required placeholder="Number such as 4.5"/>
                         </td>
                     </tr>
                 </table>

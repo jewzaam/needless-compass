@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -75,6 +76,17 @@ public class RestResource {
         TestApp.enrichSite(house);
         MongoManager.createHouse(house);
         return TestApp.prettyJson(house);
+    }
+
+    @DELETE
+    @Path("/house")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public void deleteHouse(String houseJson) throws MalformedURLException, IOException {
+        System.out.println(houseJson);
+        Gson g = new Gson();
+        House house = g.fromJson(houseJson, House.class);
+        MongoManager.deleteHouse(house);
     }
 
     @GET

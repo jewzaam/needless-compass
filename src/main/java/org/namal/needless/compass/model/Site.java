@@ -11,41 +11,12 @@ import java.math.BigDecimal;
  *
  * @author nmalik
  */
-public class Site {
+public class Site extends Coordinate {
     private String objectOwner = "default";
     private String name;
     private String[] categories;
-    private BigDecimal latitude;
-    private BigDecimal longitude;
     private String address;
-
-    /**
-     * @return the latitude
-     */
-    public BigDecimal getLatitude() {
-        return latitude;
-    }
-
-    /**
-     * @param latitude the latitude to set
-     */
-    public void setLatitude(BigDecimal latitude) {
-        this.latitude = latitude;
-    }
-
-    /**
-     * @return the longitude
-     */
-    public BigDecimal getLongitude() {
-        return longitude;
-    }
-
-    /**
-     * @param longitude the longitude to set
-     */
-    public void setLongitude(BigDecimal longitude) {
-        this.longitude = longitude;
-    }
+    private BigDecimal rating;
 
     /**
      * @return the address
@@ -101,5 +72,19 @@ public class Site {
      */
     public void setObjectOwner(String objectOwner) {
         this.objectOwner = objectOwner;
+    }
+
+    /**
+     * @return the rating
+     */
+    public BigDecimal getRating() {
+        return rating;
+    }
+
+    /**
+     * @param rating the rating to set
+     */
+    public void setRating(BigDecimal rating) {
+        this.rating = rating;
     }
 }

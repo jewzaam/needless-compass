@@ -17,12 +17,12 @@ import java.util.List;
  * @author nmalik
  */
 public class Waypoint implements Comparable<Waypoint> {
-    private final Site current;
+    private final Coordinate current;
     private final Waypoint previous;
     private final List<Waypoint> next = new ArrayList<>();
     private Score score;
 
-    public Waypoint(Site current, Waypoint previous) {
+    public Waypoint(Coordinate current, Waypoint previous) {
         this.current = current;
         this.previous = previous;
 
@@ -37,7 +37,7 @@ public class Waypoint implements Comparable<Waypoint> {
      *
      * @param current
      */
-    public Waypoint(Site current) {
+    public Waypoint(Coordinate current) {
         this(current, null);
     }
 
@@ -46,7 +46,7 @@ public class Waypoint implements Comparable<Waypoint> {
      *
      * @return the current site
      */
-    public Site getCurrent() {
+    public Coordinate getCurrent() {
         return current;
     }
 

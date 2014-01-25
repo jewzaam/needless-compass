@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import org.namal.needless.compass.model.Category;
+import org.namal.needless.compass.model.Coordinate;
 import org.namal.needless.compass.model.House;
 import org.namal.needless.compass.model.Houses;
 import org.namal.needless.compass.model.Site;
@@ -31,6 +33,7 @@ public class MongoManager {
 
     private static final String COLLECTION_SITE = "site";
     private static final String COLLECTION_HOUSE = "house";
+    private static final String COLLECTION_CATEGORY = "category";
     private static final String COLLECTION_TRIP = "trip";
 
     private static MongoClient client;
@@ -68,21 +71,28 @@ public class MongoManager {
 
         // and now initialize collections and ensure constraints
         { // to have short scope for collection initialization
-            DBCollection siteColl = db.getCollection(COLLECTION_SITE);
-            BasicDBObject siteUK = new BasicDBObject("longitude", 1)
+            DBCollection coll = db.getCollection(COLLECTION_SITE);
+            BasicDBObject uk = new BasicDBObject("longitude", 1)
                     .append("latitude", 1)
                     .append("owner", 1)
                     .append("unique", true);
-            siteColl.createIndex(siteUK);
+            coll.createIndex(uk);
         }
 
         { // to have short scope for collection initialization
-            DBCollection houseColl = db.getCollection(COLLECTION_HOUSE);
-            BasicDBObject houseUK = new BasicDBObject("longitude", 1)
+            DBCollection coll = db.getCollection(COLLECTION_HOUSE);
+            BasicDBObject uk = new BasicDBObject("longitude", 1)
                     .append("latitude", 1)
                     .append("owner", 1)
                     .append("unique", true);
-            houseColl.createIndex(houseUK);
+            coll.createIndex(uk);
+        }
+
+        { // to have short scope for collection initialization
+            DBCollection coll = db.getCollection(COLLECTION_CATEGORY);
+            BasicDBObject uk = new BasicDBObject("name", 1)
+                    .append("unique", true);
+            coll.createIndex(uk);
         }
     }
 
@@ -107,6 +117,9 @@ public class MongoManager {
             dbSite.put("latitude", site.getLatitude().toString());
             dbSite.put("longitude", site.getLongitude().toString());
             dbSite.put("name", site.getName());
+            if (site.getRating() != null) {
+                dbSite.put("rating", site.getRating().toString());
+            }
 
             BasicDBObject query = new BasicDBObject()
                     .append("objectOwner", site.getObjectOwner())
@@ -137,6 +150,10 @@ public class MongoManager {
                 site.setLatitude(new BigDecimal((String) obj.get("latitude")));
                 site.setLongitude(new BigDecimal((String) obj.get("longitude")));
                 site.setName((String) obj.get("name"));
+
+                if (obj.get("rating") != null) {
+                    site.setRating(new BigDecimal((String) obj.get("rating")));
+                }
 
                 if (obj.get("categories") instanceof Collection) {
                     List<String> categories = new ArrayList<>();
@@ -171,12 +188,43 @@ public class MongoManager {
             dbHouse.put("longitude", house.getLongitude().toString());
             dbHouse.put("name", house.getName());
 
+            if (house.getAnchors() != null && house.getAnchors().length > 0) {
+                BasicDBList dbAnchors = new BasicDBList();
+                for (Coordinate c : house.getAnchors()) {
+                    BasicDBObject dbCoordinate = new BasicDBObject();
+                    dbCoordinate.put("latitude", c.getLatitude().toString());
+                    dbCoordinate.put("longitude", c.getLongitude().toString());
+                    dbAnchors.add(dbCoordinate);
+                }
+                dbHouse.put("anchors", dbAnchors);
+            }
+
             BasicDBObject query = new BasicDBObject()
                     .append("objectOwner", house.getObjectOwner())
                     .append("longitude", house.getLongitude().toString())
                     .append("latitude", house.getLatitude().toString());
 
             coll.update(query, dbHouse, true, false);
+        } finally {
+            db.requestDone();
+        }
+    }
+
+    public static void deleteHouse(House house) {
+        if (null == db) {
+            initialize();
+        }
+        try {
+            db.requestStart();
+            DBCollection coll = db.getCollection(COLLECTION_HOUSE);
+            BasicDBObject dbHouse = new BasicDBObject();
+
+            BasicDBObject query = new BasicDBObject()
+                    .append("objectOwner", house.getObjectOwner())
+                    .append("longitude", house.getLongitude().toString())
+                    .append("latitude", house.getLatitude().toString());
+
+            coll.remove(query);
         } finally {
             db.requestDone();
         }
@@ -200,6 +248,19 @@ public class MongoManager {
                 house.setLatitude(new BigDecimal((String) obj.get("latitude")));
                 house.setLongitude(new BigDecimal((String) obj.get("longitude")));
                 house.setName((String) obj.get("name"));
+
+                if (obj.get("anchors") instanceof Collection) {
+                    List<Coordinate> anchors = new ArrayList<>();
+                    for (Object o : (Collection) obj.get("anchors")) {
+                        DBObject dbCoordinate = (DBObject) o;
+                        Coordinate c = new Coordinate();
+                        c.setLatitude(new BigDecimal((String) dbCoordinate.get("latitude")));
+                        c.setLongitude(new BigDecimal((String) dbCoordinate.get("longitude")));
+                        anchors.add(c);
+                    }
+                    house.setAnchors(anchors.toArray(new Coordinate[]{}));
+                }
+
                 houseList.add(house);
             }
         } finally {
@@ -209,5 +270,30 @@ public class MongoManager {
         Houses houses = new Houses();
         houses.setHouses((House[]) houseList.toArray(new House[]{}));
         return houses;
+    }
+
+    public static List<Category> loadCategories() {
+        if (null == db) {
+            initialize();
+        }
+        List<Category> categoryList = new ArrayList<>();
+        try {
+            db.requestStart();
+            DBCollection coll = db.getCollection(COLLECTION_CATEGORY);
+            DBCursor cur = coll.find();
+            // TODO add protection for large set of data
+            while (cur.hasNext()) {
+                Category category = new Category();
+                DBObject obj = cur.next();
+                category.setName((String) obj.get("name"));
+                category.setRateable((boolean) obj.get("rateable"));
+
+                categoryList.add(category);
+            }
+        } finally {
+            db.requestDone();
+        }
+
+        return categoryList;
     }
 }

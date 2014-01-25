@@ -1,0 +1,17 @@
+use needlesscompass
+
+db.category.insert({"code":"work","name":"Work"})
+db.category.insert({"code":"coffee","name":"Coffee Shop"})
+db.category.insert({"code":"workshop","name":"Workshop"})
+db.category.insert({"code":"shopping","name":"Shopping"})
+db.category.insert({"code":"grocery","name":"Grocery Store"})
+db.category.insert({"code":"warehouse","name":"Warehouse"})
+db.category.insert({"code":"mops","name":"MOPS"})
+db.category.insert({"code":"college","name":"College"})
+db.category.insert({"code":"daycare","name":"Day Care"})
+db.category.insert({"code":"park","name":"Park"})
+db.category.insert({"code":"chiropractor","name":"Chiropractor"})
+db.category.insert({"code":"elementaryschool","name":"Elementary School"})
+db.category.insert({"code":"middleschool","name":"Middle School"})
+db.category.insert({"code":"highschool","name":"High School"})
+

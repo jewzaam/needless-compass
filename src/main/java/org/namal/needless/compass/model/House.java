@@ -13,7 +13,7 @@ import java.util.Map;
  * @author nmalik
  */
 public class House extends Site implements Comparable<House> {
-
+    private Coordinate[] anchors;
     private Score score;
     /**
      * For each trip, the starting dummy "house" waypoint. Each waypoint has
@@ -43,7 +43,8 @@ public class House extends Site implements Comparable<House> {
     }
 
     /**
-     * @param paths the paths to set
+     * @param trip
+     * @param waypoint
      */
     public void addPath(Trip trip, Waypoint waypoint) {
         paths.put(trip, waypoint);
@@ -55,5 +56,19 @@ public class House extends Site implements Comparable<House> {
             return 1;
         }
         return getScore().compareTo(t.getScore());
+    }
+
+    /**
+     * @return the anchors
+     */
+    public Coordinate[] getAnchors() {
+        return anchors;
+    }
+
+    /**
+     * @param anchors the anchors to set
+     */
+    public void setAnchors(Coordinate[] anchors) {
+        this.anchors = anchors;
     }
 }

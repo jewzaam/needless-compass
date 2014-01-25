@@ -29,11 +29,16 @@
                         'rest/nc/data',
                         {},
                         function(data) {
-                            var text = "";
+                            var newHtml = "<table><tr><th>Name</th><th>Score</th><th>Address</th><th></th></tr>";
                             for (var i = 0; i < data.length; i++) {
-                                text += (parseInt(data[i].score.value) + " = " + data[i].address + "<br>");
+                                newHtml += ("<tr><td>" +
+                                        data[i].name + "</td><td>" +
+                                        parseInt(data[i].score.value) + "</td><td>" +
+                                        data[i].address +
+                                        "</td></tr>")
                             }
-                            $("#result").html(text);
+                            newHtml += "</table>"
+                            $("#result").html(newHtml);
                         },
                         "json"
                         );

@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
+import org.namal.needless.compass.model.Coordinate;
 import org.namal.needless.compass.model.House;
 import org.namal.needless.compass.model.Houses;
 import org.namal.needless.compass.model.Score;
@@ -121,11 +122,20 @@ public class TestApp {
     public void process(House house) {
         for (Trip trip : trips.getTrips()) {
             // reset current site to house and create starting waypoint (as 'previous')
-            Waypoint currentWaypoint = new Waypoint(house);
+            Waypoint rootWaypoint = new Waypoint(house);
 
-            house.addPath(trip, currentWaypoint);
+            // add main waypoint as path
+            house.addPath(trip, rootWaypoint);
 
-            addWaypoints(house, currentWaypoint, trip.getCategoryNames(), 0);
+            // for each anchor, process paths, else just process from house
+            if (house.getAnchors() != null && house.getAnchors().length > 0) {
+                for (Coordinate coordinate : house.getAnchors()) {
+                    Waypoint anchorWaypoint = new Waypoint(coordinate, rootWaypoint);
+                    addWaypoints(coordinate, anchorWaypoint, trip.getCategoryNames(), 0);
+                }
+            } else {
+                addWaypoints(house, rootWaypoint, trip.getCategoryNames(), 0);
+            }
         }
         // got a bunch 'o data, now figure out a score for this house!
         // get the lowest score from each of the first children of the path's waypoint
@@ -143,13 +153,14 @@ public class TestApp {
      * Recursively add next waypoints to current waypoint starting at given
      * cateogry name index and ending with the given house.
      *
+     * @param start
      * @param current
      * @param categoryNames
      * @param categoryNameIndex
      */
-    public void addWaypoints(House house, Waypoint current, String[] categoryNames, int categoryNameIndex) {
+    public void addWaypoints(Coordinate start, Waypoint current, String[] categoryNames, int categoryNameIndex) {
         if (categoryNameIndex >= categoryNames.length) {
-            Waypoint childWaypoint = new Waypoint(house, current);
+            Waypoint childWaypoint = new Waypoint(start, current);
             return;
         }
 
@@ -159,7 +170,7 @@ public class TestApp {
 
         for (Site site : categorySiteMap.get(categoryNames[categoryNameIndex])) {
             Waypoint childWaypoint = new Waypoint(site, current);
-            addWaypoints(house, childWaypoint, categoryNames, categoryNameIndex + 1);
+            addWaypoints(start, childWaypoint, categoryNames, categoryNameIndex + 1);
         }
     }
 
