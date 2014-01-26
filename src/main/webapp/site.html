@@ -29,11 +29,11 @@
 
                     var result = $('#result'),
                             categories = $.trim($('#categories').val()),
+                            rating = $.trim($('#rating').val()),
                             error = "";
                     var data = {
                         "name": $.trim($('#name').val()),
-                        "address": $.trim($('#streetAddress').val()),
-                        "rating": $.trim($('#rating').val())
+                        "address": $.trim($('#streetAddress').val())
                     };
 
                     result.removeClass('invalid');
@@ -54,6 +54,9 @@
                     }
                     if (categories && categories.length) {
                         data.categories = categories.split(",");
+                    }
+                    if (rating && rating.length) {
+                        data.rating = rating;
                     }
 
                     //console.log("clicked: " + name);
