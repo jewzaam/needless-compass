@@ -79,6 +79,13 @@
                 "chiropractor"
             ],
             "frequency": 0.3
+        },
+        {
+            "name": "Museum",
+            "categoryNames": [
+                "museum"
+            ],
+            "frequency": 0.5
         }
     ]
 }
