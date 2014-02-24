@@ -5,6 +5,7 @@
  */
 package org.namal.needless.compass.model.v2;
 
+import java.util.List;
 import org.namal.mongo.model.MongoObject;
 
 /**
@@ -28,7 +29,7 @@ public class Route extends MongoObject {
     /**
      * Any waypoints to stop at between source and destination.
      */
-    private double[][] waypoints;
+    private List<double[]> waypoints;
 
     /**
      * The destination (end) location.
@@ -76,14 +77,14 @@ public class Route extends MongoObject {
     /**
      * @return the waypoints
      */
-    public double[][] getWaypoints() {
+    public List<double[]> getWaypoints() {
         return waypoints;
     }
 
     /**
      * @param waypoints the waypoints to set
      */
-    public void setWaypoints(double[][] waypoints) {
+    public void setWaypoints(List<double[]> waypoints) {
         this.waypoints = waypoints;
     }
 

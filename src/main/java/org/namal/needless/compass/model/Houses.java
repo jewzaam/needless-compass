@@ -5,6 +5,8 @@
  */
 package org.namal.needless.compass.model;
 
+import org.namal.needless.compass.model.v2.House;
+
 /**
  *
  * @author nmalik

@@ -12,11 +12,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.namal.needless.compass.app.TestApp;
-import org.namal.needless.compass.model.House;
-import org.namal.needless.compass.model.Houses;
-import org.namal.needless.compass.model.Site;
-import org.namal.needless.compass.model.Sites;
-import org.namal.needless.compass.mongo.MongoManager;
+import org.namal.needless.compass.model.v2.House;
 
 /**
  * Simple service to test out NewRelic custom metrics.

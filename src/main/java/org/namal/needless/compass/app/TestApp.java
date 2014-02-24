@@ -6,7 +6,6 @@
 package org.namal.needless.compass.app;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,110 +16,116 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
+import org.namal.mongo.MongoCRUD;
+import org.namal.mongo.model.geo.Shape;
 import org.namal.needless.compass.model.Coordinate;
-import org.namal.needless.compass.model.House;
-import org.namal.needless.compass.model.Houses;
+import org.namal.needless.compass.model.v2.House;
 import org.namal.needless.compass.model.Score;
 import org.namal.needless.compass.model.Site;
-import org.namal.needless.compass.model.Sites;
-import org.namal.needless.compass.model.Trip;
-import org.namal.needless.compass.model.Trips;
 import org.namal.needless.compass.model.Waypoint;
 import org.namal.needless.compass.model.google.Geocode;
 import org.namal.needless.compass.model.google.Result;
-import org.namal.needless.compass.mongo.MongoManager;
+import org.namal.needless.compass.model.v2.PointOfInterest;
+import org.namal.needless.compass.model.v2.RouteTree;
+import org.namal.needless.compass.model.v2.Trip;
 
 /**
  *
  * @author nmalik
  */
 public class TestApp {
+    private static final int FIND_POC_LIMIT = 3;
+    private static final String COLLECTION_POI = "poi";
+    private static final String COLLECTION_ROUTE = "route";
+    private static final String COLLECTION_TRIP = "trip";
 
-    private Sites sites;
-    private Houses houses;
-    private Trips trips;
-    private Map<String, Set<Site>> categorySiteMap;
+    private final MongoCRUD crud = new MongoCRUD("needlesscompass");
 
     public TestApp() {
     }
 
     public void initialize() throws IOException {
-        /*
-         try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("sites.json");
-         InputStreamReader isr = new InputStreamReader(is, Charset.defaultCharset())) {
-         Gson g = new Gson();
-         sites = g.fromJson(isr, Sites.class);
-         if (null == sites || sites.getSites().length <= 0) {
-         throw new IllegalStateException("No sites found!");
-         }
-         }
-         */
-        sites = MongoManager.loadSites();
+        crud.createIndex2dsphere(COLLECTION_POI, Shape.ATTRIBUTE_LOCATION);
+        crud.createIndex(COLLECTION_POI, PointOfInterest.ATTRIBUTE_CATEGORIES);
+    }
 
-        /*
-         try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("houses.json");
-         InputStreamReader isr = new InputStreamReader(is, Charset.defaultCharset())) {
-         Gson g = new Gson();
-         houses = g.fromJson(isr, Houses.class);
-         if (null == houses || houses.getHouses().length <= 0) {
-         throw new IllegalStateException("No houses found!");
-         }
-         }
-         */
-        houses = MongoManager.loadHouses();
+    public String process(String owner) {
 
-        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("trips.json");
-                InputStreamReader isr = new InputStreamReader(is, Charset.defaultCharset())) {
-            Gson g = new Gson();
-            trips = g.fromJson(isr, Trips.class);
-            if (null == trips || trips.getTrips().length <= 0) {
-                throw new IllegalStateException("No trips found!");
-            }
+        // get all trips
+        Iterator<Trip> tripItr = crud.find(
+                // collection
+                COLLECTION_TRIP,
+                // query
+                String.format("{owner:%s}", owner),
+                // projection
+                null
+        );
+
+        List<Trip> trips = new ArrayList<>();
+        while (tripItr.hasNext()) {
+            trips.add(tripItr.next());
         }
 
-        categorySiteMap = new HashMap<>();
+        // get all houses and initialize a sorted set.  scores will sort it eventually
+        TreeSet<House> sortedHouses = new TreeSet<>();
 
-        for (Site site : sites.getSites()) {
-            if (site.getCategories() != null) {
-                for (String category : site.getCategories()) {
-                    if (!categorySiteMap.containsKey(category)) {
-                        categorySiteMap.put(category, new HashSet<Site>());
-                    }
-                    categorySiteMap.get(category).add(site);
+        Iterator<House> houseItr = crud.find(
+                // collection
+                COLLECTION_POI,
+                // query
+                String.format("{owner:%s,categories:%s}", owner, House.CATEGORY_HOUSE),
+                // projection
+                null
+        );
+
+        while (houseItr.hasNext()) {
+            House house = houseItr.next();
+            process(owner, house, trips);
+            sortedHouses.add(house);
+        }
+
+        return new Gson().toJson(sortedHouses);
+    }
+
+    public void process(String owner, House house, List<Trip> trips) {
+
+        // for each trip find closes sites that match using global limit
+        for (Trip trip : trips) {
+            // for each trip prep a route and collect transient points
+            RouteTree root = new RouteTree(house);
+            RouteTree current = root;
+
+            for (String categoryName : trip.getCategoryNames()) {
+                // get POI near last coordinates
+                Iterator<PointOfInterest> poiItr = crud.find(
+                        // collection
+                        COLLECTION_POI,
+                        // query
+                        String.format("{%s: { $near: { $geometry: { type: \"Point\", coordinates: [%f,%f] } } }, owner:%s, category:%s }",
+                                Shape.ATTRIBUTE_LOCATION, // location attribute
+                                current.parent.getLocation().getCoordinates()[0][0], // lat
+                                current.parent.getLocation().getCoordinates()[0][1], // long
+                                owner,
+                                categoryName
+                        ),
+                        // projection
+                        null,
+                        // limit
+                        FIND_POC_LIMIT
+                );
+
+                while (poiItr.hasNext()) {
+                    current.children.add(new RouteTree(poiItr.next()));
                 }
             }
-        }
-    }
 
-    public String process() {
-        // for each house + trip find all categories that satisfy the waypoint needs and then compute final best (lowest) score
-        for (House house : houses.getHouses()) {
-            process(house);
-        }
-
-        // sorted output
-        TreeSet<House> sortedHouses = new TreeSet<>();
-        sortedHouses.addAll(Arrays.asList(houses.getHouses()));
-
-        return prettyJson(sortedHouses);
-    }
-
-    private static final Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
-
-    public static String prettyJson(Object o) {
-        return prettyGson.toJson(o);
-    }
-
-    public void process(House house) {
-        for (Trip trip : trips.getTrips()) {
             // reset current site to house and create starting waypoint (as 'previous')
             Waypoint rootWaypoint = new Waypoint(house);
 
@@ -128,14 +133,7 @@ public class TestApp {
             house.addPath(trip, rootWaypoint);
 
             // for each anchor, process paths, else just process from house
-            if (house.getAnchors() != null && house.getAnchors().length > 0) {
-                for (Coordinate coordinate : house.getAnchors()) {
-                    Waypoint anchorWaypoint = new Waypoint(coordinate, rootWaypoint);
-                    addWaypoints(coordinate, anchorWaypoint, trip.getCategoryNames(), 0);
-                }
-            } else {
-                addWaypoints(house, rootWaypoint, trip.getCategoryNames(), 0);
-            }
+            addWaypoints(house, rootWaypoint, trip.getCategoryNames(), 0);
         }
         // got a bunch 'o data, now figure out a score for this house!
         // get the lowest score from each of the first children of the path's waypoint
@@ -150,8 +148,8 @@ public class TestApp {
     }
 
     /**
-     * Recursively add next waypoints to current waypoint starting at given
-     * cateogry name index and ending with the given house.
+     * Recursively add next waypoints to current waypoint starting at given cateogry name index and ending with the
+     * given house.
      *
      * @param start
      * @param current

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.namal.needless.compass.model.v2.cloudmade;
+package org.namal.needless.compass.model.cloudmade;
 
 import java.util.List;
 

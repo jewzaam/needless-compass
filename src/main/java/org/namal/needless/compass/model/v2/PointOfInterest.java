@@ -14,6 +14,8 @@ import org.namal.mongo.model.geo.Shape;
  * @author nmalik
  */
 public class PointOfInterest extends Shape {
+    public static final String ATTRIBUTE_CATEGORIES;
+    
     private final Set<String> categories = new HashSet<>();
     private String name;
     private String address;
