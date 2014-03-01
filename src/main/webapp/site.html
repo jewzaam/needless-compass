@@ -1,0 +1,128 @@
+<!--
+    JBoss, Home of Professional Open Source
+    Copyright 2013, Red Hat, Inc. and/or its affiliates, and individual
+    contributors by the @authors tag. See the copyright.txt in the
+    distribution for a full listing of individual contributors.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Needless Compass</title>
+        <!-- icon source: http://4vector.com/free-vector/compass-rose-98397 -->
+        <link rel="shortcut icon" href="images/compass_rose.ico"/>
+        <link rel="stylesheet" href="css/styles.css"/>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('#sayHello').click(function(event) {
+                    event.preventDefault();
+
+                    var result = $('#result'),
+                            categories = $.trim($('#categories').val()),
+                            rating = $.trim($('#rating').val()),
+                            error = "";
+                    var data = {
+                        "name": $.trim($('#name').val()),
+                        "address": $.trim($('#streetAddress').val())
+                    };
+
+                    result.removeClass('invalid');
+
+                    if (!data.name || !data.name.length) {
+                        result.addClass('invalid');
+                        error += '<br>A name is required!';
+                        return;
+                    }
+                    if (!data.address || !data.address.length) {
+                        result.addClass('invalid');
+                        error += '<br>A street address is required!';
+                        return;
+                    }
+                    if (result.hasClass('invalid')) {
+                        result.html(error);
+                        return;
+                    }
+                    if (categories && categories.length) {
+                        data.categories = categories.split(",");
+                    }
+                    if (rating && rating.length) {
+                        data.rating = rating;
+                    }
+
+                    //console.log("clicked: " + name);
+                    $.ajax({
+                        url: 'rest/nc/site',
+                        dataType: 'json',
+                        data: JSON.stringify(data),
+                        type: 'POST',
+                        contentType: 'application/json',
+                        beforeSend: function(data) {
+                            result.html("Sending...");
+                        },
+                        success: function(data) {
+                            //console.log("success: " + data.result);
+                            result.html("Success!");
+                        }
+                    })
+                            .error(function() {
+                                //console.log("error");
+                            });
+                });
+            }); // (document).ready
+        </script>
+    </head>
+    <body>
+        Needless Compass: Site<br>
+        <form name="theForm">
+            <fieldset>
+                <table>
+                    <tr>
+                        <td>
+                            <label for="name" id="name_label">Name *</label>
+                        </td>
+                        <td>
+                            <input name="name" id="name" type="text" size="100" required placeholder="The name"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="streetAddress" id="streetAddress_label">Street Address *</label>
+                        </td>
+                        <td>
+                            <input name="streetAddress" id="streetAddress" type="text" size="100" required placeholder="The address"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="categories" id="categories_label">Categories</label>
+                        </td>
+                        <td>
+                            <input name="categories" id="categories" type="text" size="100" required placeholder="Comma separated list of categories"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="rating" id="rating_label">Rating</label>
+                        </td>
+                        <td>
+                            <input name="rating" id="rating" type="text" size="100" required placeholder="Number such as 4.5"/>
+                        </td>
+                    </tr>
+                </table>
+                <input type="submit" id="sayHello" value="Add!"/>
+                <span id="result"></span>
+            </fieldset>
+        </form>
+
+    </body>
+</html>

@@ -1,0 +1,6 @@
+use needlesscompass
+
+db.house.insert({  "objectOwner" : "default", "address" : "80 Sophia Lane, Willow Spring, NC 27592, USA", "latitude" : "35.5486999", "longitude" : "-78.576252", "name" : "Current Home" })
+db.house.insert({  "objectOwner" : "default", "address" : "Maggie Run Lane, Fuquay-Varina, NC, USA", "latitude" : "35.602801", "longitude" : "-78.83070429999999", "name" : "Maggie Run" })
+db.house.insert({  "objectOwner" : "default", "address" : "8004 Lake Shore Drive, Garner, NC 27529, USA", "latitude" : "35.662709", "longitude" : "-78.63383600000002", "name" : "Lot near Lake Benson", "anchors": [ { "latitude" : "35.65754", "longitude" : "-78.613064" }, { "latitude":"35.655553","longitude":"-78.666322"} ] })
+

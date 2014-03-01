@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.namal.needless.compass;
+package org.namal.needless.compass.model;
 
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -18,7 +18,6 @@ import org.junit.Test;
  * @author nmalik
  */
 public class HousesTest {
-
     @Test
     public void load() throws IOException {
         try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("houses.json");

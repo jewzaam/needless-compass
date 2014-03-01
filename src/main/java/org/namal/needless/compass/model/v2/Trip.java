@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.namal.needless.compass;
+package org.namal.needless.compass.model.v2;
 
 import java.math.BigDecimal;
 
@@ -60,5 +60,4 @@ public class Trip {
     public void setFrequency(BigDecimal frequency) {
         this.frequency = frequency;
     }
-
 }

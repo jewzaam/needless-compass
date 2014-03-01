@@ -1,4 +1,4 @@
-package org.namal.needless.compass;
+package org.namal.needless.compass.rest;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -9,9 +9,8 @@ import javax.ws.rs.core.Application;
 
 @ApplicationPath("/rest")
 public class RestApplication extends Application {
-
     @Override
     public Set<Class<?>> getClasses() {
-        return new HashSet<Class<?>>(Arrays.asList(NeedlessCompassResource.class));
+        return new HashSet<Class<?>>(Arrays.asList(RestResource.class));
     }
 }

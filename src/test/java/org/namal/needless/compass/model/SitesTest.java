@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.namal.needless.compass;
+package org.namal.needless.compass.model;
 
+import org.namal.needless.compass.model.Sites;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.InputStream;
