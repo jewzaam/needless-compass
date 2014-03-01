@@ -17,16 +17,9 @@
 package org.namal.needless.compass.app;
 
 import com.google.gson.Gson;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -38,8 +31,7 @@ import org.namal.mongo.MongoCRUD;
 import org.namal.mongo.model.geo.Shape;
 import org.namal.needless.compass.model.House;
 import org.namal.needless.compass.model.Score;
-import org.namal.needless.compass.model.google.Geocode;
-import org.namal.needless.compass.model.google.Result;
+import org.namal.needless.compass.google.model.Result;
 import org.namal.needless.compass.model.PointOfInterest;
 import org.namal.needless.compass.model.RouteTree;
 import org.namal.needless.compass.model.Trip;
@@ -245,43 +237,18 @@ public class TestApp {
     }
 
     public static void enrichSite(Site site) throws MalformedURLException, IOException {
-        String geocodeApiUrlString;
+        Result geocode = null;
         if (site.getAddress() != null && !site.getAddress().isEmpty()) {
-            geocodeApiUrlString = "http://maps.googleapis.com/maps/api/geocode/json?sensor=false&address=" + URLEncoder.encode(site.getAddress(), "UTF-8");
-        } else if (site.getLatitude() != null && site.getLongitude() != null) {
-            geocodeApiUrlString = "http://maps.googleapis.com/maps/api/geocode/json?sensor=false&latlng=" + site.getLatitude().toString() + "," + site.getLongitude().toString();
+            geocode = org.namal.needless.compass.google.GoogleGeocode.execute(site.getAddress());
         } else {
-            throw new MalformedURLException("Unable to construct URL, must supply either address or latitude/longitude on Site");
-        }
-        URL url = new URL(geocodeApiUrlString);
-        URLConnection con = url.openConnection();
-
-        StringBuilder buff = new StringBuilder();
-
-        try (InputStream is = con.getInputStream();
-                InputStreamReader isr = new InputStreamReader(is, Charset.defaultCharset());
-                BufferedReader reader = new BufferedReader(isr)) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                buff.append(line).append("\n");
-            }
+            geocode = org.namal.needless.compass.google.GoogleGeocode.execute(site.getLatitude(), site.getLongitude());
         }
 
-        String jsonString = buff.toString();
-        Gson g = new Gson();
-        Geocode geocode = g.fromJson(jsonString, Geocode.class);
-
-        if (!"OK".equals(geocode.getStatus())) {
-            throw new RuntimeException("Status from geocode API not OK: " + jsonString);
-        }
-
-        // use only first result
-        Result result = geocode.getResults()[0];
-        site.setAddress(result.getFormatted_address());
-        site.setLatitude(new BigDecimal(result.getGeometry().getLocation().getLat()));
-        site.setLongitude(new BigDecimal(result.getGeometry().getLocation().getLng()));
+        site.setAddress(geocode.getFormattedAddress());
+        site.setLatitude(new BigDecimal(geocode.getGeometry().getLocation().getLat()));
+        site.setLongitude(new BigDecimal(geocode.getGeometry().getLocation().getLng()));
         if (site.getName() == null || site.getName().isEmpty()) {
-            site.setName(result.getFormatted_address());
+            site.setName(geocode.getFormattedAddress());
         }
     }
 

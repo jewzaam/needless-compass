@@ -14,20 +14,41 @@
  * You should have received a copy of the GNU General Public License
  * along with Needless Compass.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.namal.needless.compass.model.osrm;
+package org.namal.needless.compass.google.model;
 
 /**
- * https://github.com/DennisOSRM/Project-OSRM/wiki/Output-json
  *
- * @author nmalik
+ * @author jewzaam
  */
-public class Route {
+public class Geometry {
+    private Location location;
+    private String location_type;
+
     /**
-     * 0 - SUCCESSFUL
+     * @return the location
      */
-    int status;
+    public Location getLocation() {
+        return location;
+    }
 
-    String status_message;
+    /**
+     * @param location the location to set
+     */
+    public void setLocation(Location location) {
+        this.location = location;
+    }
 
-    RouteSummary route_summary;
+    /**
+     * @return the location_type
+     */
+    public String getLocation_type() {
+        return location_type;
+    }
+
+    /**
+     * @param location_type the location_type to set
+     */
+    public void setLocation_type(String location_type) {
+        this.location_type = location_type;
+    }
 }

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Needless Compass.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.namal.needless.compass.model.google;
+package org.namal.needless.compass.google.model;
 
 /**
  *
@@ -56,14 +56,14 @@ public class Result {
     /**
      * @return the formatted_address
      */
-    public String getFormatted_address() {
+    public String getFormattedAddress() {
         return formatted_address;
     }
 
     /**
      * @param formatted_address the formatted_address to set
      */
-    public void setFormatted_address(String formatted_address) {
+    public void setFormattedAddress(String formatted_address) {
         this.formatted_address = formatted_address;
     }
 }

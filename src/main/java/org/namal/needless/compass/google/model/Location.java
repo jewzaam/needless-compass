@@ -14,41 +14,41 @@
  * You should have received a copy of the GNU General Public License
  * along with Needless Compass.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.namal.needless.compass.model.google;
+package org.namal.needless.compass.google.model;
 
 /**
  *
  * @author jewzaam
  */
-public class Geocode {
-    private Result results[];
-    private String status;
+public class Location {
+    private String lat;
+    private String lng;
 
     /**
-     * @return the results
+     * @return the lat
      */
-    public Result[] getResults() {
-        return results;
+    public String getLat() {
+        return lat;
     }
 
     /**
-     * @param results the results to set
+     * @param lat the lat to set
      */
-    public void setResults(Result[] results) {
-        this.results = results;
+    public void setLat(String lat) {
+        this.lat = lat;
     }
 
     /**
-     * @return the status
+     * @return the lng
      */
-    public String getStatus() {
-        return status;
+    public String getLng() {
+        return lng;
     }
 
     /**
-     * @param status the status to set
+     * @param lng the lng to set
      */
-    public void setStatus(String status) {
-        this.status = status;
+    public void setLng(String lng) {
+        this.lng = lng;
     }
 }
