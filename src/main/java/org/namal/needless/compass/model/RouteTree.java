@@ -16,30 +16,19 @@
  */
 package org.namal.needless.compass.model;
 
-import org.namal.needless.compass.model.Sites;
-import com.google.gson.Gson;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import org.junit.Assert;
-import org.junit.Test;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
+ * A tree of routes.
  *
  * @author nmalik
  */
-public class SitesTest {
+public class RouteTree {
+    public PointOfInterest root;
+    public final List<RouteTree> children = new ArrayList<>();
 
-    @Test
-    public void load() throws IOException {
-        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("sites.json");
-                InputStreamReader isr = new InputStreamReader(is, Charset.defaultCharset())) {
-            Gson g = new Gson();
-            Sites sites = g.fromJson(isr, Sites.class);
-            Assert.assertNotNull(sites);
-            Assert.assertNotNull(sites.getSites());
-            Assert.assertTrue(sites.getSites().length > 0);
-        }
+    public RouteTree(PointOfInterest poi) {
+        root = poi;
     }
 }

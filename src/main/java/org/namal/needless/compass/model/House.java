@@ -16,30 +16,26 @@
  */
 package org.namal.needless.compass.model;
 
-import org.namal.needless.compass.model.Sites;
-import com.google.gson.Gson;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import org.junit.Assert;
-import org.junit.Test;
-
 /**
  *
  * @author nmalik
  */
-public class SitesTest {
+public class House extends PointOfInterest implements Comparable<House> {
+    public static final String CATEGORY_HOUSE = "house";
 
-    @Test
-    public void load() throws IOException {
-        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("sites.json");
-                InputStreamReader isr = new InputStreamReader(is, Charset.defaultCharset())) {
-            Gson g = new Gson();
-            Sites sites = g.fromJson(isr, Sites.class);
-            Assert.assertNotNull(sites);
-            Assert.assertNotNull(sites.getSites());
-            Assert.assertTrue(sites.getSites().length > 0);
+    public Integer score;
+
+    @Override
+    public int compareTo(House t) {
+        if (null == t) {
+            return 1;
+        }
+        if (score > t.score) {
+            return 1;
+        } else if (score == t.score) {
+            return 0;
+        } else {
+            return -1;
         }
     }
 }

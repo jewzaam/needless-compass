@@ -14,11 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with Needless Compass.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.namal.needless.compass.model.cloudmade;
+package org.namal.needless.compass.model.osrm;
 
 /**
- * http://cloudmade.com/documentation/routing#JS-response-JSON
- *
+ * https://github.com/DennisOSRM/Project-OSRM/wiki/Output-json
  *
  * @author nmalik
  */
@@ -42,11 +41,6 @@ public class RouteSummary {
      * Name of the end point of the route.
      */
     private String end_point;
-
-    /**
-     * Transit points if they are present in request.
-     */
-    private double[][] transit_points;
 
     /**
      * @return the total_distance
@@ -102,19 +96,5 @@ public class RouteSummary {
      */
     public void setEndPoint(String end_point) {
         this.end_point = end_point;
-    }
-
-    /**
-     * @return the transit_points
-     */
-    public double[][] getTransitPoints() {
-        return transit_points;
-    }
-
-    /**
-     * @param transit_points the transit_points to set
-     */
-    public void setTransitPoints(double[][] transit_points) {
-        this.transit_points = transit_points;
     }
 }

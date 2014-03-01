@@ -14,41 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with Needless Compass.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.namal.needless.compass.model.google;
+package org.namal.needless.compass.model.osrm;
 
 /**
+ * https://github.com/DennisOSRM/Project-OSRM/wiki/Output-json
  *
- * @author jewzaam
+ * @author nmalik
  */
-public class Location {
-    private String lat;
-    private String lng;
-
+public class Route {
     /**
-     * @return the lat
+     * 0 - SUCCESSFUL
      */
-    public String getLat() {
-        return lat;
-    }
+    int status;
 
-    /**
-     * @param lat the lat to set
-     */
-    public void setLat(String lat) {
-        this.lat = lat;
-    }
+    String status_message;
 
-    /**
-     * @return the lng
-     */
-    public String getLng() {
-        return lng;
-    }
-
-    /**
-     * @param lng the lng to set
-     */
-    public void setLng(String lng) {
-        this.lng = lng;
-    }
+    RouteSummary route_summary;
 }
