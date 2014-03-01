@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<archimate:model xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:archimate="http://www.archimatetool.com/archimate" name="needless-compass" id="38954f5e" version="2.6.0">
+  <folder name="Business" id="373bcf5d" type="business"/>
+  <folder name="Application" id="7dc152e2" type="application"/>
+  <folder name="Technology" id="75113b3a" type="technology"/>
+  <folder name="Motivation" id="fd5de387" type="motivation"/>
+  <folder name="Implementation &amp; Migration" id="e0aef3c0" type="implementation_migration"/>
+  <folder name="Connectors" id="5439c8f1" type="connectors"/>
+  <folder name="Relations" id="2961c8b9" type="relations"/>
+  <folder name="Views" id="a565eeb0" type="diagrams">
+    <element xsi:type="archimate:ArchimateDiagramModel" id="8ab9fb63" name="Default View">
+      <child xsi:type="archimate:Note" id="560434f5" textAlignment="1">
+        <bounds y="-12"/>
+        <content>needless-compass.archimate
+Master
+nzmalik@gmali.com</content>
+      </child>
+    </element>
+  </folder>
+</archimate:model>
