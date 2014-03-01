@@ -29,7 +29,7 @@ import java.nio.charset.Charset;
 import org.namal.needless.compass.google.model.Result;
 
 /**
- *
+ * 
  * @author jewzaam
  */
 public class GoogleGeocode {

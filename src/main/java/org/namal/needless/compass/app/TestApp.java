@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,6 +36,8 @@ import org.namal.needless.compass.google.model.Result;
 import org.namal.needless.compass.model.PointOfInterest;
 import org.namal.needless.compass.model.RouteTree;
 import org.namal.needless.compass.model.Trip;
+import org.namal.needless.compass.osrm.OsrmRoute;
+import org.namal.needless.compass.osrm.model.Route;
 
 /**
  *
@@ -114,22 +117,38 @@ public class TestApp {
         house.setScore(new Score(score));
     }
 
-    public double computeMinScore(RouteTree root) {
-        // collect sorted set of leaf waypoints. first will be smallest score
-        Set<Waypoint> leafs = new TreeSet<>();
+    public double computeMinScore(RouteTree root) throws IOException {
+        // find the leaf of the tree
+        Set<RouteTree> leafs = new TreeSet<>();
 
-        Stack<Iterator<Waypoint>> stack = new Stack<>();
-        stack.push(root.iterator());
+        Stack<Iterator<RouteTree>> stack = new Stack<>();
+        stack.push(root.children.iterator());
 
         while (!stack.empty() && stack.peek().hasNext()) {
-            Waypoint child = stack.peek().next();
-            child.getScore(); // for now just to prime the score
-            if (child.getNext().isEmpty()) {
+            RouteTree child = stack.peek().next();
+            if (child.children.isEmpty()) {
                 leafs.add(child);
                 stack.pop();
             } else {
-                stack.push(child.iterator());
+                stack.push(child.children.iterator());
             }
+        }
+
+        for (RouteTree leaf : leafs) {
+            LinkedList<double[]> coordinates = new LinkedList<>();
+
+            // for each leaf node collect the locations as coordinates
+            coordinates.addFirst(leaf.poi.getLocation().getCoordinates()[0]);
+
+            // grab the coordinates of each ancestor
+            RouteTree current = leaf;
+            while (current.parent != null) {
+                coordinates.addFirst(current.parent.poi.getLocation().getCoordinates()[0]);
+                current = current.parent;
+            }
+
+            // use coordinates to get a route
+            Route route = OsrmRoute.execute(coordinates);
         }
 
         return leafs.isEmpty() ? 0.0 : leafs.iterator().next().getScore().doubleValue();
@@ -137,7 +156,7 @@ public class TestApp {
 
     private RouteTree process(String owner, House house, Trip trip) {
         // for each trip prep a route and collect transient points
-        RouteTree root = new RouteTree(house);
+        RouteTree root = new RouteTree(null, house);
         List<RouteTree> processing = new ArrayList<>();
 
         // initialize processing list with root
@@ -154,6 +173,11 @@ public class TestApp {
 
             // simply replace the processing list to kick off the next round of processing
             processing = newProcessing;
+        }
+
+        // add the house to the end of each leaf
+        for (RouteTree tree : processing) {
+            tree.children.add(new RouteTree(tree, house));
         }
 
         return root;
@@ -174,8 +198,8 @@ public class TestApp {
                 // query
                 String.format("{%s: { $near: { $geometry: { type: \"Point\", coordinates: [%f,%f] } } }, owner:%s, category:%s }",
                         Shape.ATTRIBUTE_LOCATION, // location attribute
-                        parent.root.getLocation().getCoordinates()[0][0], // lat
-                        parent.root.getLocation().getCoordinates()[0][1], // long
+                        parent.poi.getLocation().getCoordinates()[0][0], // lat
+                        parent.poi.getLocation().getCoordinates()[0][1], // long
                         owner,
                         categoryName
                 ),
@@ -186,7 +210,7 @@ public class TestApp {
         );
 
         while (poiItr.hasNext()) {
-            parent.children.add(new RouteTree(poiItr.next()));
+            parent.children.add(new RouteTree(parent, poiItr.next()));
         }
     }
 

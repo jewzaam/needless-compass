@@ -25,6 +25,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.util.List;
 import org.namal.needless.compass.osrm.model.Route;
 
 /**
@@ -34,9 +35,18 @@ import org.namal.needless.compass.osrm.model.Route;
 public class OsrmRoute {
     private static final String OSRM_BASE_URI = "http://router.project-osrm.org/viaroute?z=0";
     private static final String OSRM_WAYPOINT_URI = "&loc=%f,%f";
+    private static final String HTTP_REFERER;
 
-    public static Route execute(double[][] coordinates) throws MalformedURLException, IOException {
-        if (null == coordinates || coordinates.length < 2) {
+    static {
+        String hostname = System.getenv("OPENSHIFT_APP_DNS");
+        if (null == hostname || hostname.isEmpty()) {
+            hostname = "needlesscompass-nmalik.rhcloud.com";
+        }
+        HTTP_REFERER = String.format("http://%s/", hostname);
+    }
+
+    public static Route execute(List<double[]> coordinates) throws MalformedURLException, IOException {
+        if (null == coordinates || coordinates.size() < 2) {
             throw new MalformedURLException("Unable to construct URL, must at least two coordinates");
         }
 
@@ -51,6 +61,9 @@ public class OsrmRoute {
 
         URL url = new URL(buffUrl.toString());
         URLConnection con = url.openConnection();
+
+        // set Referer per: https://github.com/DennisOSRM/Project-OSRM/wiki/API%20Usage%20Policy
+        con.setRequestProperty("Referer", HTTP_REFERER);
 
         StringBuilder buffResponse = new StringBuilder();
 

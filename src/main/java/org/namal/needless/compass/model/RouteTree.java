@@ -25,10 +25,12 @@ import java.util.List;
  * @author nmalik
  */
 public class RouteTree {
-    public PointOfInterest root;
+    public final RouteTree parent;
+    public final PointOfInterest poi;
     public final List<RouteTree> children = new ArrayList<>();
 
-    public RouteTree(PointOfInterest poi) {
-        root = poi;
+    public RouteTree(RouteTree parent, PointOfInterest poi) {
+        this.parent = parent;
+        this.poi = poi;
     }
 }
