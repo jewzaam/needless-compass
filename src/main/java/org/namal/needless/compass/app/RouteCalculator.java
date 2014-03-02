@@ -49,6 +49,10 @@ public class RouteCalculator extends Calculator {
         this.crud = crud;
     }
 
+    public String name() {
+        return "ROUTE";
+    }
+
     @Override
     protected long score(String owner, House house) throws IOException {
         // get all trips

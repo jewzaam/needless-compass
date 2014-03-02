@@ -16,26 +16,28 @@
  */
 package org.namal.needless.compass.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  *
  * @author nmalik
  */
-public class House extends PointOfInterest implements Comparable<House> {
+public class House extends PointOfInterest {
     public static final String CATEGORY_HOUSE = "house";
 
-    public Integer score;
+    public Map<String, Long> scores = new HashMap<>();
 
-    @Override
-    public int compareTo(House t) {
-        if (null == t) {
-            return 1;
-        }
-        if (score > t.score) {
-            return 1;
-        } else if (score == t.score) {
-            return 0;
-        } else {
-            return -1;
-        }
+    public void setScore(String name, Long value) {
+        scores.put(name, value);
+    }
+
+    /**
+     * Map where key is name of calculator and value is the score.
+     *
+     * @return
+     */
+    public Map<String, Long> getScores() {
+        return scores;
     }
 }

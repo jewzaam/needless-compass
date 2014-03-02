@@ -19,6 +19,8 @@ package org.namal.needless.compass.rest;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -27,6 +29,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import org.namal.needless.compass.app.Calculator;
+import org.namal.needless.compass.app.RouteCalculator;
 import org.namal.needless.compass.app.ScoreApplication;
 import org.namal.needless.compass.model.House;
 
@@ -46,10 +50,10 @@ public class RestResource {
     @GET
     @Path("/data")
     @Produces(MediaType.APPLICATION_JSON)
-    public String data() throws IOException {
+    public String data() throws Exception {
         ScoreApplication app = new ScoreApplication();
         app.initialize();
-        return app.process();
+        return app.process("rest");
     }
 
     @GET
@@ -65,14 +69,6 @@ public class RestResource {
         app.process(house);
 
         return ScoreApplication.prettyJson(house);
-    }
-
-    @GET
-    @Path("/houses")
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getHouses() {
-        Houses houses = MongoManager.loadHouses();
-        return ScoreApplication.prettyJson(houses);
     }
 
     @POST

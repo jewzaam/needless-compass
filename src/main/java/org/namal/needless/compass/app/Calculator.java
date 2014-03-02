@@ -26,7 +26,6 @@ import org.namal.needless.compass.model.House;
 public abstract class Calculator {
     private long min = Long.MAX_VALUE;
     private long max = Long.MIN_VALUE;
-    private long total = 0;
 
     /**
      *
@@ -43,7 +42,6 @@ public abstract class Calculator {
         if (score > max) {
             max = score;
         }
-        total += score;
         return score;
     }
 
@@ -55,9 +53,7 @@ public abstract class Calculator {
         return max;
     }
 
-    public long total() {
-        return total;
-    }
+    public abstract String name();
 
     protected abstract long score(String owner, House house) throws Exception;
 }

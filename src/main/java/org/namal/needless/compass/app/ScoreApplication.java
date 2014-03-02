@@ -18,6 +18,7 @@ package org.namal.needless.compass.app;
 
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
@@ -31,12 +32,16 @@ import org.namal.needless.compass.model.PointOfInterest;
  * @author nmalik
  */
 public class ScoreApplication {
-
-    private final MongoCRUD crud = new MongoCRUD("needlesscompass");
+    private static final MongoCRUD crud = new MongoCRUD("needlesscompass");
     private final List<Calculator> calculators;
 
-    public ScoreApplication(List<Calculator> scores) {
-        this.calculators = scores;
+    public ScoreApplication() {
+        this.calculators = new ArrayList<>();
+        calculators.add(new RouteCalculator(crud));
+    }
+
+    public ScoreApplication(List<Calculator> calculators) {
+        this.calculators = calculators;
     }
 
     public void initialize() throws IOException {
@@ -44,7 +49,7 @@ public class ScoreApplication {
         crud.createIndex(PointOfInterest.COLLECTION, PointOfInterest.ATTRIBUTE_CATEGORIES);
     }
 
-    public String process(String owner) {
+    public String process(String owner) throws Exception {
         // get all houses and initialize a sorted set.  scores will sort it eventually
         TreeSet<House> sortedHouses = new TreeSet<>();
 
@@ -56,37 +61,40 @@ public class ScoreApplication {
                 // projection
                 null
         );
-        
-        // collect scores for each house.  
-        // for each calculator need to know:
-        // * range of scores for all houses
-        // * if low score is better
 
+        List<House> houses = new ArrayList<>();
+
+        // run calculator for each house.
+        // each calculator will collect min, max, and total scores.
         while (houseItr.hasNext()) {
             House house = houseItr.next();
             // process each house
-            long score = 0;
             for (Calculator calculator : calculators) {
-                calculator.calculate(owner, house);
+                house.setScore(calculator.name(), calculator.calculate(owner, house));
             }
-            process(owner, house, trips);
-            // and add it to the sorted set
-            sortedHouses.add(house);
+            houses.add(house);
+        }
+
+        // scores are all collected but need to adjusted as percentages
+        for (Calculator calculator : calculators) {
+            // score = 55, min = 5, max = 105, % is 50
+            // score - min / (max - min)
+            for (House house : houses) {
+                long score = 100 * ((house.getScores().get(calculator.name()) - calculator.min())
+                        / (calculator.max() - calculator.min()));
+                house.setScore(calculator.name(), score);
+            }
         }
 
         // return json with the best scored house first
         return new Gson().toJson(sortedHouses);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         ScoreApplication app = new ScoreApplication();
         try {
-//            app.initialize();
-//            System.out.println(app.process());
-            House house = new House();
-            house.setAddress("Raleigh NC");
-            enrichSite(house);
-            System.out.println(new Gson().toJson(house));
+            app.initialize();
+            System.out.println(app.process("test"));
         } catch (IOException e) {
             System.err.println("Failed to start application:");
             e.printStackTrace();
