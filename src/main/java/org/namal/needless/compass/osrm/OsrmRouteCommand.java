@@ -17,6 +17,8 @@
 package org.namal.needless.compass.osrm;
 
 import com.google.gson.Gson;
+import com.netflix.hystrix.HystrixCommand;
+import com.netflix.hystrix.HystrixCommandGroupKey;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +34,7 @@ import org.namal.needless.compass.osrm.model.Route;
  *
  * @author jewzaam
  */
-public class OsrmRoute {
+public class OsrmRouteCommand extends HystrixCommand<org.namal.needless.compass.model.Route> {
     private static final String OSRM_BASE_URI = "http://router.project-osrm.org/viaroute?z=0";
     private static final String OSRM_WAYPOINT_URI = "&loc=%f,%f";
     private static final String HTTP_REFERER;
@@ -45,7 +47,15 @@ public class OsrmRoute {
         HTTP_REFERER = String.format("http://%s/", hostname);
     }
 
-    public static Route execute(List<double[]> coordinates) throws MalformedURLException, IOException {
+    private final List<double[]> coordinates;
+
+    public OsrmRouteCommand(List<double[]> coordinates) {
+        super(HystrixCommandGroupKey.Factory.asKey("OsrmRoute"));
+        this.coordinates = coordinates;
+    }
+
+    @Override
+    public org.namal.needless.compass.model.Route run() throws MalformedURLException, IOException {
         if (null == coordinates || coordinates.size() < 2) {
             throw new MalformedURLException("Unable to construct URL, must at least two coordinates");
         }
@@ -84,6 +94,12 @@ public class OsrmRoute {
             throw new RuntimeException("Status from OSRM API not successful: " + jsonString);
         }
 
-        return route;
+        org.namal.needless.compass.model.Route output = route.convert();
+
+        // set the things that are not available on the osrm result set
+        output.setRoute(coordinates);
+        output.setApiRequest(buffUrl.toString());
+
+        return output;
     }
 }

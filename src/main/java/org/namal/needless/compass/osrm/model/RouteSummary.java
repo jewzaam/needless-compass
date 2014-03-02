@@ -43,6 +43,8 @@ public class RouteSummary {
     private String end_point;
 
     /**
+     * Distance in meters.
+     *
      * @return the total_distance
      */
     public long getTotalDistance() {
@@ -57,6 +59,8 @@ public class RouteSummary {
     }
 
     /**
+     * Estimated time in seconds.
+     *
      * @return the total_time
      */
     public long getTotalTime() {

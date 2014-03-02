@@ -14,35 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with Needless Compass.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.namal.needless.compass.model.cloudmade;
+package org.namal.needless.compass.util;
 
-import java.util.List;
+import java.util.Comparator;
+import org.namal.needless.compass.model.Route;
 
 /**
- * http://cloudmade.com/documentation/routing#JS-response-JSON
+ * Sorts routes based on distance.
  *
- * @author nmalik
+ * @author jewzaam
  */
-public class Route {
-    /**
-     * The API version.
-     */
-    double version;
-    /**
-     * 0 - OK, 1 - Error
-     */
-    int status;
-    /**
-     * Error message string.
-     */
-    String status_message;
-
-    RouteSummary route_summary;
-
-    /**
-     * Array of nodes from start to end in 4326 projection.
-     */
-    double[][] route_geometry;
-
-    List<RouteInstruction> route_instructions;
+public class RouteDistanceComparator implements Comparator<Route> {
+    @Override
+    public int compare(Route t, Route t1) {
+        if (null == t) {
+            return -1;
+        }
+        if (null == t1) {
+            return 1;
+        }
+        if (t.getDistanceMeters() < t1.getDistanceMeters()) {
+            return -1;
+        } else if (t.getDistanceMeters() == t1.getDistanceMeters()) {
+            return 0;
+        } else {
+            return 1;
+        }
+    }
 }

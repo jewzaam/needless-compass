@@ -27,6 +27,7 @@ import org.namal.mongo.model.MongoObject;
  * @author nmalik
  */
 public class Route extends MongoObject {
+    public static final String COLLECTION = "route";
 
     /**
      * Raw API request made to collect this information.
@@ -34,24 +35,14 @@ public class Route extends MongoObject {
     private String api_request;
 
     /**
-     * The source (start) location.
+     * The coordinates for the route in order.
      */
-    private double[] source;
+    private List<double[]> route;
 
     /**
-     * Any waypoints to stop at between source and destination.
+     * Distance in meters.
      */
-    private List<double[]> waypoints;
-
-    /**
-     * The destination (end) location.
-     */
-    private double[] destination;
-
-    /**
-     * Distance in miles.
-     */
-    private long distance_miles;
+    private long distance_meters;
 
     /**
      * Estimated time in seconds.
@@ -73,59 +64,31 @@ public class Route extends MongoObject {
     }
 
     /**
-     * @return the source
+     * @return the route
      */
-    public double[] getSource() {
-        return source;
+    public List<double[]> getRoute() {
+        return route;
     }
 
     /**
-     * @param source the source to set
+     * @param route the route to set
      */
-    public void setSource(double[] source) {
-        this.source = source;
+    public void setRoute(List<double[]> route) {
+        this.route = route;
     }
 
     /**
-     * @return the waypoints
+     * @return the distance_meters
      */
-    public List<double[]> getWaypoints() {
-        return waypoints;
+    public long getDistanceMeters() {
+        return distance_meters;
     }
 
     /**
-     * @param waypoints the waypoints to set
+     * @param distance_meters the distance_miles to set
      */
-    public void setWaypoints(List<double[]> waypoints) {
-        this.waypoints = waypoints;
-    }
-
-    /**
-     * @return the destination
-     */
-    public double[] getDestination() {
-        return destination;
-    }
-
-    /**
-     * @param destination the destination to set
-     */
-    public void setDestination(double[] destination) {
-        this.destination = destination;
-    }
-
-    /**
-     * @return the distance_miles
-     */
-    public long getDistance_miles() {
-        return distance_miles;
-    }
-
-    /**
-     * @param distance_miles the distance_miles to set
-     */
-    public void setDistanceMiles(long distance_miles) {
-        this.distance_miles = distance_miles;
+    public void setDistanceMeters(long distance_meters) {
+        this.distance_meters = distance_meters;
     }
 
     /**

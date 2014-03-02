@@ -27,7 +27,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import org.namal.needless.compass.app.TestApp;
+import org.namal.needless.compass.app.ScoreApplication;
 import org.namal.needless.compass.model.House;
 
 /**
@@ -47,7 +47,7 @@ public class RestResource {
     @Path("/data")
     @Produces(MediaType.APPLICATION_JSON)
     public String data() throws IOException {
-        TestApp app = new TestApp();
+        ScoreApplication app = new ScoreApplication();
         app.initialize();
         return app.process();
     }
@@ -56,15 +56,15 @@ public class RestResource {
     @Path("/score")
     @Produces(MediaType.APPLICATION_JSON)
     public String score(@QueryParam("address") String streetAddress) throws MalformedURLException, IOException {
-        TestApp app = new TestApp();
+        ScoreApplication app = new ScoreApplication();
         app.initialize();
 
         House house = new House();
         house.setAddress(streetAddress);
-        TestApp.enrichSite(house);
+        ScoreApplication.enrichSite(house);
         app.process(house);
 
-        return TestApp.prettyJson(house);
+        return ScoreApplication.prettyJson(house);
     }
 
     @GET
@@ -72,7 +72,7 @@ public class RestResource {
     @Produces(MediaType.APPLICATION_JSON)
     public String getHouses() {
         Houses houses = MongoManager.loadHouses();
-        return TestApp.prettyJson(houses);
+        return ScoreApplication.prettyJson(houses);
     }
 
     @POST
@@ -83,11 +83,11 @@ public class RestResource {
         System.out.println(houseJson);
         Gson g = new Gson();
         House house = g.fromJson(houseJson, House.class);
-        TestApp app = new TestApp();
+        ScoreApplication app = new ScoreApplication();
         app.initialize();
-        TestApp.enrichSite(house);
+        ScoreApplication.enrichSite(house);
         MongoManager.createHouse(house);
-        return TestApp.prettyJson(house);
+        return ScoreApplication.prettyJson(house);
     }
 
     @DELETE
@@ -106,7 +106,7 @@ public class RestResource {
     @Produces(MediaType.APPLICATION_JSON)
     public String getSites() {
         Sites sites = MongoManager.loadSites();
-        return TestApp.prettyJson(sites);
+        return ScoreApplication.prettyJson(sites);
     }
 
     @POST
@@ -117,10 +117,10 @@ public class RestResource {
         System.out.println(siteJson);
         Gson g = new Gson();
         Site site = g.fromJson(siteJson, Site.class);
-        TestApp app = new TestApp();
+        ScoreApplication app = new ScoreApplication();
         app.initialize();
-        TestApp.enrichSite(site);
+        ScoreApplication.enrichSite(site);
         MongoManager.createSite(site);
-        return TestApp.prettyJson(site);
+        return ScoreApplication.prettyJson(site);
     }
 }

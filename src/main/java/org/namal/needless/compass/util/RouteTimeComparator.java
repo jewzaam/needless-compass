@@ -14,31 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with Needless Compass.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.namal.needless.compass.osrm.model;
+package org.namal.needless.compass.util;
+
+import java.util.Comparator;
+import org.namal.needless.compass.model.Route;
 
 /**
- * https://github.com/DennisOSRM/Project-OSRM/wiki/Output-json
+ * Sorts routes based on total time.
  *
- * @author nmalik
+ * @author jewzaam
  */
-public class Route {
-    public static final int STATUS_SUCCESS = 0;
-
-    /**
-     * 0 - SUCCESSFUL
-     */
-    public int status;
-
-    public String status_message;
-
-    public RouteSummary route_summary;
-    
-    public org.namal.needless.compass.model.Route convert() {
-        org.namal.needless.compass.model.Route output = new org.namal.needless.compass.model.Route();
-        
-        output.setDistanceMeters(route_summary.getTotalDistance());
-        output.setTimeSeconds(route_summary.getTotalTime());
-        
-        return output;
+public class RouteTimeComparator implements Comparator<Route> {
+    @Override
+    public int compare(Route t, Route t1) {
+        if (null == t) {
+            return -1;
+        }
+        if (null == t1) {
+            return 1;
+        }
+        if (t.getTimeSeconds() < t1.getTimeSeconds()) {
+            return -1;
+        } else if (t.getTimeSeconds() == t1.getTimeSeconds()) {
+            return 0;
+        } else {
+            return 1;
+        }
     }
 }
