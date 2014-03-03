@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Needless Compass.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.namal.needless.compass.app;
+package org.namal.needless.compass.calculator;
 
 import org.namal.needless.compass.model.House;
 

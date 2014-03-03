@@ -14,16 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with Needless Compass.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.namal.needless.compass.app;
+package org.namal.needless.compass.hystrix;
 
 import com.google.gson.Gson;
-import java.io.IOException;
+import com.netflix.hystrix.HystrixCommand;
+import com.netflix.hystrix.HystrixCommandGroupKey;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 import org.namal.mongo.MongoCRUD;
 import org.namal.mongo.model.geo.Shape;
+import org.namal.needless.compass.calculator.Calculator;
 import org.namal.needless.compass.model.House;
 import org.namal.needless.compass.model.PointOfInterest;
 
@@ -31,27 +33,22 @@ import org.namal.needless.compass.model.PointOfInterest;
  *
  * @author nmalik
  */
-public class ScoreApplication {
-    private static final MongoCRUD crud = new MongoCRUD("needlesscompass");
+public class ScoreHousesCommand extends HystrixCommand<String> {
+    private final String owner;
+    private final MongoCRUD crud;
     private final List<Calculator> calculators;
 
-    public ScoreApplication() {
-        this.calculators = new ArrayList<>();
-        calculators.add(new RouteCalculator(crud));
-    }
-
-    public ScoreApplication(List<Calculator> calculators) {
+    public ScoreHousesCommand(String owner, MongoCRUD crud, List<Calculator> calculators) {
+        super(HystrixCommandGroupKey.Factory.asKey("ScoreHouses"));
+        this.owner = owner;
+        this.crud = crud;
         this.calculators = calculators;
     }
 
-    public void initialize() throws IOException {
+    @Override
+    protected String run() throws Exception {
         crud.createIndex2dsphere(PointOfInterest.COLLECTION, Shape.ATTRIBUTE_LOCATION);
         crud.createIndex(PointOfInterest.COLLECTION, PointOfInterest.ATTRIBUTE_CATEGORIES);
-    }
-
-    public String process(String owner) throws Exception {
-        // get all houses and initialize a sorted set.  scores will sort it eventually
-        TreeSet<House> sortedHouses = new TreeSet<>();
 
         Iterator<House> houseItr = crud.find(
                 // collection
@@ -87,17 +84,6 @@ public class ScoreApplication {
         }
 
         // return json with the best scored house first
-        return new Gson().toJson(sortedHouses);
-    }
-
-    public static void main(String[] args) throws Exception {
-        ScoreApplication app = new ScoreApplication();
-        try {
-            app.initialize();
-            System.out.println(app.process("test"));
-        } catch (IOException e) {
-            System.err.println("Failed to start application:");
-            e.printStackTrace();
-        }
+        return new Gson().toJson(houses);
     }
 }
