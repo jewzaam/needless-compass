@@ -16,6 +16,9 @@
  */
 package org.namal.needless.compass.rest;
 
+import com.google.gson.Gson;
+import java.util.ArrayList;
+import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -23,6 +26,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.namal.mongo.MongoCRUD;
 import org.namal.mongo.Result;
+import org.namal.needless.compass.calculator.Calculator;
+import org.namal.needless.compass.calculator.RouteCalculator;
 import org.namal.needless.compass.google.GoogleGeocodeCommand;
 import org.namal.needless.compass.hystrix.ScoreHousesCommand;
 import org.namal.needless.compass.model.PointOfInterest;
@@ -40,25 +45,40 @@ public class RestResource {
     @POST
     @Path("/poi")
     @Produces(MediaType.APPLICATION_JSON)
-    public Boolean addPoitnOfInterest(PointOfInterest poi) {
+    public String addPoitnOfInterest(String jsonString) {
         // use geocode servie to enrich point of interest
+        PointOfInterest poi = new Gson().fromJson(jsonString, PointOfInterest.class);
         poi = new GoogleGeocodeCommand(poi).execute();
+
+        // set _id to latitude|longitude
+        if (poi.getLocation().getCoordinates() != null) {
+            poi.setId(String.format("%s|%f|%f",
+                    poi.getOwner(),
+                    poi.getLocation().getCoordinates()[0],
+                    poi.getLocation().getCoordinates()[1])
+            );
+        }
+
         Result result = crud.upsert(PointOfInterest.COLLECTION, poi);
-        return !result.isError();
+        return result.isError() ? "false" : "true";
     }
 
     @POST
     @Path("/trip")
     @Produces(MediaType.APPLICATION_JSON)
-    public Boolean addTrip(Trip trip) {
+    public String addTrip(String jsonString) {
+        Trip trip = new Gson().fromJson(jsonString, Trip.class);
+        // TODO consider not converting to java object and blinding persist.. could be risky? (api not exposed anyway)
         Result result = crud.upsert(Trip.COLLECTION, trip);
-        return !result.isError();
+        return result.isError() ? "false" : "true";
     }
 
     @GET
     @Path("/scores")
     @Produces(MediaType.APPLICATION_JSON)
     public String getScores() {
-        return new ScoreHousesCommand("default", crud, null).execute();
+        List<Calculator> calculators = new ArrayList<>();
+        calculators.add(new RouteCalculator(crud));
+        return new ScoreHousesCommand("default", crud, calculators).execute();
     }
 }

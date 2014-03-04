@@ -22,7 +22,6 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TreeSet;
 import org.namal.mongo.MongoCRUD;
 import org.namal.mongo.model.geo.Shape;
 import org.namal.needless.compass.calculator.Calculator;
@@ -47,9 +46,6 @@ public class ScoreHousesCommand extends HystrixCommand<String> {
 
     @Override
     protected String run() throws Exception {
-        crud.createIndex2dsphere(PointOfInterest.COLLECTION, Shape.ATTRIBUTE_LOCATION);
-        crud.createIndex(PointOfInterest.COLLECTION, PointOfInterest.ATTRIBUTE_CATEGORIES);
-
         Iterator<House> houseItr = crud.find(
                 // collection
                 PointOfInterest.COLLECTION,

@@ -19,6 +19,7 @@ package org.namal.needless.compass.google;
 import com.google.gson.Gson;
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
+import com.netflix.hystrix.HystrixCommandProperties;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,7 +40,9 @@ public class GoogleGeocodeCommand extends HystrixCommand<PointOfInterest> {
     private final PointOfInterest poi;
 
     public GoogleGeocodeCommand(PointOfInterest poi) {
-        super(HystrixCommandGroupKey.Factory.asKey("GoogleGeocode"));
+        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("GoogleGeocode"))
+                .andCommandPropertiesDefaults(HystrixCommandProperties.Setter().withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.SEMAPHORE))
+        );
         this.poi = poi;
     }
 
@@ -48,8 +51,8 @@ public class GoogleGeocodeCommand extends HystrixCommand<PointOfInterest> {
         String geocodeApiUrlString = null;
         if (poi.getAddress() != null && !poi.getAddress().isEmpty()) {
             geocodeApiUrlString = "http://maps.googleapis.com/maps/api/geocode/json?sensor=false&address=" + URLEncoder.encode(poi.getAddress(), "UTF-8");
-        } else if (poi.getLocation().getCoordinates() != null && poi.getLocation().getCoordinates().length == 1) {
-            geocodeApiUrlString = "http://maps.googleapis.com/maps/api/geocode/json?sensor=false&latlng=" + poi.getLocation().getCoordinates()[0][0] + "," + poi.getLocation().getCoordinates()[0][1];
+//        } else if (poi.getLocation().getCoordinates() != null && poi.getLocation().getCoordinates().length == 1) {
+//            geocodeApiUrlString = "http://maps.googleapis.com/maps/api/geocode/json?sensor=false&latlng=" + poi.getLocation().getCoordinates()[0] + "," + poi.getLocation().getCoordinates()[1];
         } else {
             throw new MalformedURLException("Unable to construct URL, must supply latitude/longitude or street address");
         }
@@ -84,12 +87,17 @@ public class GoogleGeocodeCommand extends HystrixCommand<PointOfInterest> {
             poi.setName(result.getFormattedAddress());
         }
         poi.setAddress(result.getFormattedAddress());
-        poi.setCoordinates(new double[][]{{
+        poi.setCoordinates(new double[]{
             Double.parseDouble(result.getGeometry().getLocation().getLat()),
             Double.parseDouble(result.getGeometry().getLocation().getLng())
-        }});
+        });
 
         return poi;
+    }
+
+    @Override
+    protected PointOfInterest getFallback() {
+        throw new RuntimeException(getFailedExecutionException());
     }
 
 }

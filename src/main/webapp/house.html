@@ -31,7 +31,9 @@
                             error = "";
                     var data = {
                         "name": $.trim($('#name').val()),
-                        "address": $.trim($('#streetAddress').val())
+                        "address": $.trim($('#streetAddress').val()),
+                        "categories": ["house"],
+                        "owner": "default"
                     };
 
                     result.removeClass('invalid');
@@ -53,7 +55,7 @@
 
                     //console.log("clicked: " + name);
                     $.ajax({
-                        url: 'rest/nc/house',
+                        url: 'rest/nc/poi',
                         dataType: 'json',
                         data: JSON.stringify(data),
                         type: 'POST',

@@ -18,13 +18,13 @@ package org.namal.needless.compass.model;
 
 import java.util.HashSet;
 import java.util.Set;
-import org.namal.mongo.model.geo.Shape;
+import org.namal.mongo.model.geo.Point;
 
 /**
  *
  * @author nmalik
  */
-public class PointOfInterest extends Shape {
+public class PointOfInterest extends Point {
     public static final String COLLECTION = "poi";
     public static final String ATTRIBUTE_CATEGORIES = "categories";
 
