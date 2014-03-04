@@ -32,13 +32,13 @@ public class Route {
     public String status_message;
 
     public RouteSummary route_summary;
-    
+
     public org.namal.needless.compass.model.Route convert() {
         org.namal.needless.compass.model.Route output = new org.namal.needless.compass.model.Route();
-        
+
         output.setDistanceMeters(route_summary.getTotalDistance());
         output.setTimeSeconds(route_summary.getTotalTime());
-        
+
         return output;
     }
 }

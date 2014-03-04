@@ -23,6 +23,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.namal.mongo.MongoCRUD;
 import org.namal.mongo.Result;
+import org.namal.needless.compass.google.GoogleGeocodeCommand;
 import org.namal.needless.compass.hystrix.ScoreHousesCommand;
 import org.namal.needless.compass.model.PointOfInterest;
 import org.namal.needless.compass.model.Trip;
@@ -40,6 +41,8 @@ public class RestResource {
     @Path("/poi")
     @Produces(MediaType.APPLICATION_JSON)
     public Boolean addPoitnOfInterest(PointOfInterest poi) {
+        // use geocode servie to enrich point of interest
+        poi = new GoogleGeocodeCommand(poi).execute();
         Result result = crud.upsert(PointOfInterest.COLLECTION, poi);
         return !result.isError();
     }

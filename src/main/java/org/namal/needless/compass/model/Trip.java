@@ -28,7 +28,7 @@ import java.math.BigDecimal;
  */
 public class Trip {
     public static final String COLLECTION = "trip";
-    
+
     private String name;
     private String[] categoryNames;
     private BigDecimal frequency;

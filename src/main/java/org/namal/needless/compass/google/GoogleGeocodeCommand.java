@@ -17,6 +17,8 @@
 package org.namal.needless.compass.google;
 
 import com.google.gson.Gson;
+import com.netflix.hystrix.HystrixCommand;
+import com.netflix.hystrix.HystrixCommandGroupKey;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,33 +29,31 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import org.namal.needless.compass.google.model.Result;
+import org.namal.needless.compass.model.PointOfInterest;
 
 /**
- * 
+ *
  * @author jewzaam
  */
-public class GoogleGeocode {
-    public static Result execute(Double latitude, Double longitude) throws MalformedURLException, IOException {
-        if (latitude == null || longitude == null) {
-            throw new MalformedURLException("Unable to construct URL, must supply latitude and longitude");
-        }
+public class GoogleGeocodeCommand extends HystrixCommand<PointOfInterest> {
+    private final PointOfInterest poi;
 
-        String geocodeApiUrlString = "http://maps.googleapis.com/maps/api/geocode/json?sensor=false&latlng=" + latitude + "," + longitude;
-
-        return _execute(geocodeApiUrlString);
+    public GoogleGeocodeCommand(PointOfInterest poi) {
+        super(HystrixCommandGroupKey.Factory.asKey("GoogleGeocode"));
+        this.poi = poi;
     }
 
-    public static Result execute(String streetAddress) throws MalformedURLException, IOException {
-        if (null == streetAddress || streetAddress.isEmpty()) {
-            throw new MalformedURLException("Unable to construct URL, must supply street address");
+    @Override
+    protected PointOfInterest run() throws MalformedURLException, IOException {
+        String geocodeApiUrlString = null;
+        if (poi.getAddress() != null && !poi.getAddress().isEmpty()) {
+            geocodeApiUrlString = "http://maps.googleapis.com/maps/api/geocode/json?sensor=false&address=" + URLEncoder.encode(poi.getAddress(), "UTF-8");
+        } else if (poi.getLocation().getCoordinates() != null && poi.getLocation().getCoordinates().length == 1) {
+            geocodeApiUrlString = "http://maps.googleapis.com/maps/api/geocode/json?sensor=false&latlng=" + poi.getLocation().getCoordinates()[0][0] + "," + poi.getLocation().getCoordinates()[0][1];
+        } else {
+            throw new MalformedURLException("Unable to construct URL, must supply latitude/longitude or street address");
         }
 
-        String geocodeApiUrlString = "http://maps.googleapis.com/maps/api/geocode/json?sensor=false&address=" + URLEncoder.encode(streetAddress, "UTF-8");
-
-        return _execute(geocodeApiUrlString);
-    }
-
-    private static Result _execute(String geocodeApiUrlString) throws MalformedURLException, IOException {
         URL url = new URL(geocodeApiUrlString);
         URLConnection con = url.openConnection();
 
@@ -77,7 +77,19 @@ public class GoogleGeocode {
         }
 
         // use only first result
-        return geocode.getResults()[0];
+        Result result = geocode.getResults()[0];
+
+        // update poi
+        if (poi.getName() == null || poi.getName().isEmpty()) {
+            poi.setName(result.getFormattedAddress());
+        }
+        poi.setAddress(result.getFormattedAddress());
+        poi.setCoordinates(new double[][]{{
+            Double.parseDouble(result.getGeometry().getLocation().getLat()),
+            Double.parseDouble(result.getGeometry().getLocation().getLng())
+        }});
+
+        return poi;
     }
 
 }
