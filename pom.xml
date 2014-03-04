@@ -21,6 +21,14 @@
     </build>
     <repositories>
         <repository>
+            <id>mongo-utility-repo</id>
+            <url>https://raw.github.com/jewzaam/mongo-utility/mvn-repo/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
             <id>eap</id>
             <url>http://maven.repository.redhat.com/techpreview/all</url>
             <releases>
