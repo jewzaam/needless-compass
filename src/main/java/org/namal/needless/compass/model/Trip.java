@@ -17,6 +17,7 @@
 package org.namal.needless.compass.model;
 
 import java.math.BigDecimal;
+import org.namal.mongo.model.MongoObject;
 
 /**
  * For a trip we only care about all legs of the journey. It may be that one
@@ -26,7 +27,7 @@ import java.math.BigDecimal;
  *
  * @author nmalik
  */
-public class Trip {
+public class Trip extends MongoObject {
     public static final String COLLECTION = "trip";
 
     private String name;

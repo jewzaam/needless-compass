@@ -141,8 +141,8 @@ public class RouteCalculator extends Calculator {
                 // query
                 String.format("{%s: { $near: { $geometry: { type: \"Point\", coordinates: [%f,%f] } } }, owner:%s, category:%s }",
                         Shape.ATTRIBUTE_LOCATION, // location attribute
-                        parent.poi.getLocation().getCoordinates()[0], // lat
-                        parent.poi.getLocation().getCoordinates()[1], // long
+                        parent.poi.getLocation().getCoordinate()[0], // lat
+                        parent.poi.getLocation().getCoordinate()[1], // long
                         owner,
                         categoryName
                 ),
@@ -188,12 +188,12 @@ public class RouteCalculator extends Calculator {
             LinkedList<double[]> coordinates = new LinkedList<>();
 
             // for each leaf node collect the locations as coordinates
-            coordinates.addFirst(leaf.poi.getLocation().getCoordinates());
+            coordinates.addFirst(leaf.poi.getLocation().getCoordinate());
 
             // grab the coordinates of each ancestor
             RouteTree current = leaf;
             while (current.parent != null) {
-                coordinates.addFirst(current.parent.poi.getLocation().getCoordinates());
+                coordinates.addFirst(current.parent.poi.getLocation().getCoordinate());
                 current = current.parent;
             }
 

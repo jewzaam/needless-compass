@@ -18,7 +18,6 @@ package org.namal.needless.compass.hystrix;
 
 import com.google.gson.Gson;
 import com.netflix.hystrix.HystrixCommand;
-import com.netflix.hystrix.HystrixCommandGroupKey;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -37,7 +36,7 @@ public class ScoreHousesCommand extends HystrixCommand<String> {
     private final List<Calculator> calculators;
 
     public ScoreHousesCommand(String owner, MongoCRUD crud, List<Calculator> calculators) {
-        super(HystrixCommandGroupKey.Factory.asKey("ScoreHouses"));
+        super(HystrixConfiguration.Setter(ScoreHousesCommand.class, "ScoreHouses"));
         this.owner = owner;
         this.crud = crud;
         this.calculators = calculators;
@@ -49,7 +48,7 @@ public class ScoreHousesCommand extends HystrixCommand<String> {
                 // collection
                 PointOfInterest.COLLECTION,
                 // query
-                String.format("{owner:%s,categories:%s}", owner, House.CATEGORY_HOUSE),
+                String.format("{owner:%s,categories:{$in: [%s]}}", owner, House.CATEGORY_HOUSE),
                 // projection
                 null
         );

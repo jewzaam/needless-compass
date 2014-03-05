@@ -87,7 +87,7 @@ public class GoogleGeocodeCommand extends HystrixCommand<PointOfInterest> {
             poi.setName(result.getFormattedAddress());
         }
         poi.setAddress(result.getFormattedAddress());
-        poi.setCoordinates(new double[]{
+        poi.getLocation().setCoordinate(new double[]{
             Double.parseDouble(result.getGeometry().getLocation().getLat()),
             Double.parseDouble(result.getGeometry().getLocation().getLng())
         });

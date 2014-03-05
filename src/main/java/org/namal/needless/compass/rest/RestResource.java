@@ -53,11 +53,11 @@ public class RestResource {
         poi = new GoogleGeocodeCommand(poi).execute();
 
         // set _id to latitude|longitude
-        if (poi.getLocation().getCoordinates() != null) {
+        if (poi.getLocation().getCoordinate() != null) {
             poi.setId(String.format("%s|%f|%f",
                     poi.getOwner(),
-                    poi.getLocation().getCoordinates()[0],
-                    poi.getLocation().getCoordinates()[1])
+                    poi.getLocation().getCoordinate()[0],
+                    poi.getLocation().getCoordinate()[1])
             );
         }
 
