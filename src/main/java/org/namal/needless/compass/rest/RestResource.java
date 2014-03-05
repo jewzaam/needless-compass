@@ -17,6 +17,8 @@
 package org.namal.needless.compass.rest;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ws.rs.GET;
@@ -71,6 +73,23 @@ public class RestResource {
         // TODO consider not converting to java object and blinding persist.. could be risky? (api not exposed anyway)
         Result result = crud.upsert(Trip.COLLECTION, trip);
         return result.isError() ? "false" : "true";
+    }
+
+    @POST
+    @Path("/trips")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String addTrips(String jsonString) {
+        Type type = new TypeToken<List<Trip>>() {
+        }.getType();
+        List<Trip> trips = new Gson().fromJson(jsonString, type);
+        // TODO consider not converting to java object and blinding persist.. could be risky? (api not exposed anyway)
+        for (Trip trip : trips) {
+            Result result = crud.upsert(Trip.COLLECTION, trip);
+            if (result.isError()) {
+                return "false";
+            }
+        }
+        return "true";
     }
 
     @GET

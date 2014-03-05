@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.namal.mongo.MongoCRUD;
-import org.namal.mongo.model.geo.Shape;
 import org.namal.needless.compass.calculator.Calculator;
 import org.namal.needless.compass.model.House;
 import org.namal.needless.compass.model.PointOfInterest;
