@@ -83,13 +83,12 @@ public class RestResource {
         }.getType();
         List<Trip> trips = new Gson().fromJson(jsonString, type);
         // TODO consider not converting to java object and blinding persist.. could be risky? (api not exposed anyway)
+        boolean error = false;
         for (Trip trip : trips) {
             Result result = crud.upsert(Trip.COLLECTION, trip);
-            if (result.isError()) {
-                return "false";
-            }
+            error &= result.isError();
         }
-        return "true";
+        return error ? "false" : "true";
     }
 
     @GET
