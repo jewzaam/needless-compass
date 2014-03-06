@@ -21,6 +21,7 @@ import com.netflix.hystrix.HystrixCommand;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.jewzaam.hystrix.configuration.HystrixConfiguration;
 import org.namal.mongo.MongoCRUD;
 import org.namal.needless.compass.calculator.Calculator;
 import org.namal.needless.compass.model.House;

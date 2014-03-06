@@ -102,6 +102,11 @@
             <version>1.2</version>
         </dependency>
         <dependency>
+            <groupId>org.jewzaam</groupId>
+            <artifactId>hystrix-configuration</artifactId>
+            <version>0.1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>com.netflix.hystrix</groupId>
             <artifactId>hystrix-core</artifactId>
             <version>1.3.9</version>
