@@ -17,8 +17,6 @@
 package org.jewzaam.needless.compass.osrm;
 
 import com.google.gson.Gson;
-import com.netflix.hystrix.HystrixCommand;
-import com.netflix.hystrix.HystrixCommandGroupKey;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,7 +32,7 @@ import org.jewzaam.needless.compass.osrm.model.Route;
  *
  * @author jewzaam
  */
-public class OsrmRouteCommand extends HystrixCommand<org.jewzaam.needless.compass.model.Route> {
+public class OsrmRouteCommand extends AbstractRouteCommand {
     private static final String OSRM_BASE_URI = "http://router.project-osrm.org/viaroute?z=0";
     private static final String OSRM_WAYPOINT_URI = "&loc=%f,%f";
     private static final String HTTP_REFERER;
@@ -46,23 +44,35 @@ public class OsrmRouteCommand extends HystrixCommand<org.jewzaam.needless.compas
         }
         HTTP_REFERER = String.format("http://%s/", hostname);
     }
-
-    private final List<double[]> coordinates;
+    
+    /**
+     * For testing I don't want this enabled, so doing this as a quick and dirty hack.
+     * 
+     * @param value 
+     */
+    public static void disable() {
+        disabled = true;
+    }
+    
+    private static boolean disabled = false;
 
     public OsrmRouteCommand(List<double[]> coordinates) {
-        super(HystrixCommandGroupKey.Factory.asKey("OsrmRoute"));
-        this.coordinates = coordinates;
+        super("OsrmRoute", coordinates);
     }
 
     @Override
     public org.jewzaam.needless.compass.model.Route run() throws MalformedURLException, IOException {
-        if (null == coordinates || coordinates.size() < 2) {
+        if (disabled) {
+            throw new IllegalStateException("is disabled, shouldn't see any executions");
+        }
+        
+        if (null == getCoordinates() || getCoordinates().size() < 2) {
             throw new MalformedURLException("Unable to construct URL, must at least two coordinates");
         }
 
         StringBuilder buffUrl = new StringBuilder(OSRM_BASE_URI);
 
-        for (double[] coordinate : coordinates) {
+        for (double[] coordinate : getCoordinates()) {
             if (null == coordinate || coordinate.length < 2) {
                 throw new MalformedURLException("Unable to construct URL, each coordiante must have two values");
             }
@@ -97,7 +107,7 @@ public class OsrmRouteCommand extends HystrixCommand<org.jewzaam.needless.compas
         org.jewzaam.needless.compass.model.Route output = route.convert();
 
         // set the things that are not available on the osrm result set
-        output.setRoute(coordinates);
+        output.setRoute(getCoordinates());
         output.setApiRequest(buffUrl.toString());
 
         return output;

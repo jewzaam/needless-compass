@@ -1,0 +1,71 @@
+[
+    {
+        "_id": "default|35.662709|-78.633836",
+        "categories": ["house"],
+        "name": "Lot near Lake Benson",
+        "address": "8004 Lake Shore Drive, Garner, NC 27529, USA",
+        "loc": {
+            "coordinates": [35.662709, -78.63383600000002],
+            "type": "Point"
+        },
+        "properties": {},
+        "owner": "default",
+        "creation_date": "20140304 21:23:41",
+        "last_update_date": "20140304 21:23:41"
+    },
+    {
+        "_id": "default|35.674258|-78.638769",
+        "categories": ["house"],
+        "name": "North of Lake Benson",
+        "address": "2015 Gottwald Court, Garner, NC 27529, USA",
+        "loc": {
+            "coordinates": [35.674258, -78.638769],
+            "type": "Point"},
+        "properties": {},
+        "owner": "default",
+        "creation_date": "20140304 21:23:42",
+        "last_update_date": "20140304 21:23:42"
+    },
+    {
+        "_id": "default|35.694968|-78.616082",
+        "categories": ["coffee"],
+        "name": "Aversboro Coffee",
+        "address": "1401 Aversboro Road, Garner, NC 27529, USA",
+        "loc": {
+            "coordinates": [35.694968, -78.616082],
+            "type": "Point"
+        },
+        "properties": {},
+        "owner": "default",
+        "creation_date": "20140304 21:36:39",
+        "last_update_date": "20140304 21:36:39"
+    },
+    {
+        "_id": "default|35.860437|-78.704726",
+        "categories": ["coffee"],
+        "name": "New World Coffee House",
+        "address": "4112 Pleasant Valley Road #124, Raleigh, NC 27612, USA",
+        "loc": {
+            "coordinates": [35.860437, -78.7047259],
+            "type": "Point"
+        },
+        "properties": {},
+        "owner": "default",
+        "creation_date": "20140304 21:36:39",
+        "last_update_date": "20140304 21:36:39"
+    },
+    {
+        "_id": "default|35.761514|-78.737793",
+        "categories": ["coffee"],
+        "name": "Coffee and Crepes",
+        "address": "213 Crossroads Boulevard, Crossroads Plaza, Cary, NC 27518, USA",
+        "loc": {
+            "coordinates": [35.7615138, -78.7377925],
+            "type": "Point"
+        },
+        "properties": {},
+        "owner": "default",
+        "creation_date": "20140304 21:36:39",
+        "last_update_date": "20140304 21:36:39"
+    }
+]

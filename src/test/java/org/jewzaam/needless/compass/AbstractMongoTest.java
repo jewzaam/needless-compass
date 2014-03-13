@@ -25,6 +25,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.jewzaam.mongo.Configuration;
 import org.jewzaam.mongo.MongoCRUD;
+import org.junit.After;
+import org.junit.Before;
 
 /**
  * Base class for any test that wants to use the embedded monto database flapdoodle.
@@ -51,7 +53,22 @@ public abstract class AbstractMongoTest {
         mongodExe = runtime.prepare(new MongodConfig(de.flapdoodle.embed.mongo.distribution.Version.V2_4_3, MONGO_PORT, false));
         mongod = mongodExe.start();
         mongo = new Mongo(IN_MEM_CONNECTION_URL);
+    }
 
+    @AfterClass
+    public static void teardownClass() throws Exception {
+        if (mongod != null) {
+            mongod.stop();
+            mongodExe.stop();
+        }
+        crud = null;
+        mongo = null;
+        mongod = null;
+        mongodExe = null;
+    }
+
+    @Before
+    public void setup() {
         Configuration config = new Configuration();
         config.setName(DB_NAME);
         config.setHost(MONGO_HOST);
@@ -59,13 +76,12 @@ public abstract class AbstractMongoTest {
         crud = new MongoCRUD(config);
     }
 
-    @AfterClass
-    public static void teardownClass() throws Exception {
+    @After
+    public void teardown() throws Exception {
         if (mongod != null) {
-//            mongo.dropDatabase(DB_NAME);
-            mongod.stop();
-            mongodExe.stop();
+            mongo.dropDatabase(DB_NAME);
         }
         crud = null;
     }
+
 }

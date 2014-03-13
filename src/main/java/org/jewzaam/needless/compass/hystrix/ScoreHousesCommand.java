@@ -16,12 +16,12 @@
  */
 package org.jewzaam.needless.compass.hystrix;
 
-import com.google.gson.Gson;
 import com.netflix.hystrix.HystrixCommand;
+import com.netflix.hystrix.HystrixCommandGroupKey;
+import com.netflix.hystrix.HystrixCommandKey;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.jewzaam.hystrix.configuration.HystrixConfiguration;
 import org.jewzaam.mongo.MongoCRUD;
 import org.jewzaam.needless.compass.calculator.Calculator;
 import org.jewzaam.needless.compass.model.House;
@@ -31,20 +31,22 @@ import org.jewzaam.needless.compass.model.PointOfInterest;
  *
  * @author nmalik
  */
-public class ScoreHousesCommand extends HystrixCommand<String> {
+public class ScoreHousesCommand extends HystrixCommand<List<House>> {
     private final String owner;
     private final MongoCRUD crud;
     private final List<Calculator> calculators;
 
     public ScoreHousesCommand(String owner, MongoCRUD crud, List<Calculator> calculators) {
-        super(HystrixConfiguration.Setter(ScoreHousesCommand.class, "ScoreHouses"));
+        super(HystrixCommand.Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("ScoreHouses"))
+                .andCommandKey(HystrixCommandKey.Factory.asKey("ScoreHouses"))
+        );
         this.owner = owner;
         this.crud = crud;
         this.calculators = calculators;
     }
 
     @Override
-    protected String run() throws Exception {
+    protected List<House> run() throws Exception {
         Iterator<House> houseItr = crud.find(
                 // collection
                 PointOfInterest.COLLECTION,
@@ -72,14 +74,15 @@ public class ScoreHousesCommand extends HystrixCommand<String> {
         for (Calculator calculator : calculators) {
             // score = 55, min = 5, max = 105, % is 50
             // score - min / (max - min)
+            double range = calculator.max() - calculator.min();
             for (House house : houses) {
-                long score = 100 * ((house.getScores().get(calculator.name()) - calculator.min())
-                        / (calculator.max() - calculator.min()));
+                // if range is 0 then the min and max are the same.. score is 100% then.
+                long score = (long) (100 * (range == 0 ? 1 : (house.getScores().get(calculator.name()) - calculator.min()) / range));
                 house.setScore(calculator.name(), score);
             }
         }
 
         // return json with the best scored house first
-        return new Gson().toJson(houses);
+        return houses;
     }
 }

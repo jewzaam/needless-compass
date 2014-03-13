@@ -1,0 +1,11 @@
+[
+    {
+        "name": "Coffee Shop",
+        "categoryNames": ["coffee"],
+        "frequency": 1,
+        "_id": "1394671044169",
+        "owner": "default",
+        "creation_date": "20140312 19:37:24",
+        "last_update_date": "20140312 19:37:24"
+    }
+]

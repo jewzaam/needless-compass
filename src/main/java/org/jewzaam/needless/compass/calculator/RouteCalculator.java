@@ -39,17 +39,19 @@ import org.jewzaam.needless.compass.util.RouteTimeComparator;
  * @author jewzaam
  */
 public class RouteCalculator extends Calculator {
+    public static final String CALCULATOR_NAME = "ROUTE";
+    
     private static final int FIND_POI_LIMIT = 3;
 
     private final MongoCRUD crud;
-
+    
     public RouteCalculator(MongoCRUD crud) {
         this.crud = crud;
     }
 
     @Override
     public String name() {
-        return "ROUTE";
+        return CALCULATOR_NAME;
     }
 
     @Override

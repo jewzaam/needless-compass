@@ -32,6 +32,7 @@ import org.jewzaam.needless.compass.calculator.Calculator;
 import org.jewzaam.needless.compass.calculator.RouteCalculator;
 import org.jewzaam.needless.compass.google.GoogleGeocodeCommand;
 import org.jewzaam.needless.compass.hystrix.ScoreHousesCommand;
+import org.jewzaam.needless.compass.model.House;
 import org.jewzaam.needless.compass.model.PointOfInterest;
 import org.jewzaam.needless.compass.model.Trip;
 
@@ -100,6 +101,7 @@ public class RestResource {
     public String getScores() {
         List<Calculator> calculators = new ArrayList<>();
         calculators.add(new RouteCalculator(crud));
-        return new ScoreHousesCommand("default", crud, calculators).execute();
+        List<House> houses = new ScoreHousesCommand("default", crud, calculators).execute();
+        return new Gson().toJson(houses);
     }
 }
