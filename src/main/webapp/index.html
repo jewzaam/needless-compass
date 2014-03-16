@@ -22,20 +22,19 @@
         <link rel="shortcut icon" href="images/compass_rose.ico"/>
         <link rel="stylesheet" href="css/styles.css"/>
         <link rel="stylesheet" href="style.css" type="text/css"/>
-
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         <script type="text/javascript">
             $(document).ready(function() {
                 $("#result").html("Loading...");
                 $.get(
-                        'rest/nc/data',
+                        'rest/nc/scores',
                         {},
                         function(data) {
-                            var newHtml = "<table><tr><th>Name</th><th>Score</th><th>Address</th><th></th></tr>";
+                            var newHtml = "<table><tr><th>Name</th><th>Score: Route</th><th>Address</th><th></th></tr>";
                             for (var i = 0; i < data.length; i++) {
                                 newHtml += ("<tr><td>" +
                                         data[i].name + "</td><td>" +
-                                        parseInt(data[i].score.value) + "</td><td>" +
+                                        parseInt(data[i].scores.ROUTE) + "</td><td>" +
                                         data[i].address +
                                         "</td></tr>")
                             }

@@ -94,7 +94,7 @@ public class RestResource {
         }
         return error ? "false" : "true";
     }
-
+    
     @GET
     @Path("/scores")
     @Produces(MediaType.APPLICATION_JSON)
