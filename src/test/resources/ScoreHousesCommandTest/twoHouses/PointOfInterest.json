@@ -53,19 +53,5 @@
         "owner": "default",
         "creation_date": "20140304 21:36:39",
         "last_update_date": "20140304 21:36:39"
-    },
-    {
-        "_id": "default|35.761514|-78.737793",
-        "categories": ["coffee"],
-        "name": "Coffee and Crepes",
-        "address": "213 Crossroads Boulevard, Crossroads Plaza, Cary, NC 27518, USA",
-        "loc": {
-            "coordinates": [35.7615138, -78.7377925],
-            "type": "Point"
-        },
-        "properties": {},
-        "owner": "default",
-        "creation_date": "20140304 21:36:39",
-        "last_update_date": "20140304 21:36:39"
     }
 ]

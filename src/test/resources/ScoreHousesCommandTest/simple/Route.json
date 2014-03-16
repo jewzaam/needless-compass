@@ -6,8 +6,8 @@
             [35.662709, -78.63383600000002]
         ],
         "distance_meters": 5000,
-        "time_seconds": 6000,
-        "_id": "1394671677969",
+        "time_seconds": 5000,
+        "_id": "1",
         "owner": "default",
         "creation_date": "20140312 19:47:58",
         "last_update_date": "20140312 19:47:58"
@@ -19,8 +19,8 @@
             [35.662709, -78.63383600000002]
         ],
         "distance_meters": 10000,
-        "time_seconds": 6000,
-        "_id": "1394671677971",
+        "time_seconds": 10000,
+        "_id": "2",
         "owner": "default",
         "creation_date": "20140312 19:47:58",
         "last_update_date": "20140312 19:47:58"

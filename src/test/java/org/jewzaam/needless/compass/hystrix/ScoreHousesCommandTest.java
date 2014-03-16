@@ -85,6 +85,7 @@ public class ScoreHousesCommandTest extends AbstractMongoTest {
 
     /**
      * setup data needed
+     * @param name
      */
     public void loadData(String name) throws IOException {
         loadDataForClass(name, PointOfInterest.COLLECTION, PointOfInterest.class);
@@ -118,12 +119,11 @@ public class ScoreHousesCommandTest extends AbstractMongoTest {
         List<House> houses = cmd.execute();
         Assert.assertNotNull(houses);
         Assert.assertEquals(2, houses.size());
-        Assert.assertEquals(0, houses.get(0).getScores().get(RouteCalculator.CALCULATOR_NAME).intValue());
-        Assert.assertEquals(100, houses.get(1).getScores().get(RouteCalculator.CALCULATOR_NAME).intValue());
+        Assert.assertEquals(100, houses.get(0).getScores().get(RouteCalculator.CALCULATOR_NAME).intValue());
+        Assert.assertEquals(0, houses.get(1).getScores().get(RouteCalculator.CALCULATOR_NAME).intValue());
     }
 
     @Test
-    @Ignore
     public void fourHouses() throws IOException {
         loadData("fourHouses");
         List<Calculator> calculators = new ArrayList<>();

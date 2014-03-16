@@ -6,8 +6,8 @@
             [35.662709, -78.63383600000002]
         ],
         "distance_meters": 5000,
-        "time_seconds": 6000,
-        "_id": "1394671677969",
+        "time_seconds": 5000,
+        "_id": "1",
         "owner": "default",
         "creation_date": "20140312 19:47:58",
         "last_update_date": "20140312 19:47:58"
@@ -19,8 +19,8 @@
             [35.662709, -78.63383600000002]
         ],
         "distance_meters": 10000,
-        "time_seconds": 6000,
-        "_id": "1394671677971",
+        "time_seconds": 10000,
+        "_id": "2",
         "owner": "default",
         "creation_date": "20140312 19:47:58",
         "last_update_date": "20140312 19:47:58"
@@ -33,7 +33,7 @@
         ],
         "distance_meters": 6000,
         "time_seconds": 6000,
-        "_id": "1394671677969",
+        "_id": "3",
         "owner": "default",
         "creation_date": "20140312 19:47:58",
         "last_update_date": "20140312 19:47:58"
@@ -45,8 +45,8 @@
             [35.674258, -78.638769]
         ],
         "distance_meters": 10000,
-        "time_seconds": 6000,
-        "_id": "1394671677971",
+        "time_seconds": 10000,
+        "_id": "4",
         "owner": "default",
         "creation_date": "20140312 19:47:58",
         "last_update_date": "20140312 19:47:58"
@@ -58,8 +58,8 @@
             [35.80153, -78.90248629999999]
         ],
         "distance_meters": 8500,
-        "time_seconds": 6000,
-        "_id": "1394671677969",
+        "time_seconds": 8500,
+        "_id": "5",
         "owner": "default",
         "creation_date": "20140312 19:47:58",
         "last_update_date": "20140312 19:47:58"
@@ -71,8 +71,8 @@
             [35.80153, -78.90248629999999]
         ],
         "distance_meters": 10000,
-        "time_seconds": 6000,
-        "_id": "1394671677971",
+        "time_seconds": 10000,
+        "_id": "6",
         "owner": "default",
         "creation_date": "20140312 19:47:58",
         "last_update_date": "20140312 19:47:58"
@@ -84,8 +84,8 @@
             [35.602801, -78.8307043]
         ],
         "distance_meters": 10000,
-        "time_seconds": 6000,
-        "_id": "1394671677969",
+        "time_seconds": 10000,
+        "_id": "7",
         "owner": "default",
         "creation_date": "20140312 19:47:58",
         "last_update_date": "20140312 19:47:58"
@@ -97,8 +97,8 @@
             [35.602801, -78.8307043]
         ],
         "distance_meters": 10000,
-        "time_seconds": 6000,
-        "_id": "1394671677971",
+        "time_seconds": 10000,
+        "_id": "8",
         "owner": "default",
         "creation_date": "20140312 19:47:58",
         "last_update_date": "20140312 19:47:58"
