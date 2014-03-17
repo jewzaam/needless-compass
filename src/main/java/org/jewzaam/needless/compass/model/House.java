@@ -26,14 +26,14 @@ import java.util.Map;
 public class House extends PointOfInterest {
     public static final String CATEGORY_HOUSE = "house";
 
-    public Map<String, Long> scores = new HashMap<>();
+    private final Map<String, Long> scores = new HashMap<>();
 
     public House() {
         addCategory(CATEGORY_HOUSE);
     }
 
     public void setScore(String name, Long value) {
-        scores.put(name, value);
+        getScores().put(name, value);
     }
 
     /**

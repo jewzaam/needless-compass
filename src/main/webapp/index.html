@@ -27,16 +27,15 @@
             $(document).ready(function() {
                 $("#result").html("Loading...");
                 $.get(
-                        'rest/nc/scores',
+                        'rest/nc/scores?sort=ROUTE&dir=desc',
                         {},
                         function(data) {
-                            var newHtml = "<table><tr><th>Name</th><th>Score: Route</th><th>Address</th><th></th></tr>";
+                            var newHtml = "<table border='1'><tr><th>Name</th><th>Score: Route</th><th>Address</th></tr>";
                             for (var i = 0; i < data.length; i++) {
                                 newHtml += ("<tr><td>" +
-                                        data[i].name + "</td><td>" +
-                                        parseInt(data[i].scores.ROUTE) + "</td><td>" +
-                                        data[i].address +
-                                        "</td></tr>")
+                                        data[i].name + "</td><td align='right'>" +
+                                        parseInt(data[i].scores.ROUTE) + " %</td><td>" +
+                                        data[i].address + "</td></tr>")
                             }
                             newHtml += "</table>"
                             $("#result").html(newHtml);

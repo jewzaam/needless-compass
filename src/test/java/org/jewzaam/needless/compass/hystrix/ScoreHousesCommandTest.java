@@ -86,6 +86,7 @@ public class ScoreHousesCommandTest extends AbstractMongoTest {
     /**
      * setup data needed
      * @param name
+     * @throws java.io.IOException
      */
     public void loadData(String name) throws IOException {
         loadDataForClass(name, PointOfInterest.COLLECTION, PointOfInterest.class);
@@ -119,8 +120,8 @@ public class ScoreHousesCommandTest extends AbstractMongoTest {
         List<House> houses = cmd.execute();
         Assert.assertNotNull(houses);
         Assert.assertEquals(2, houses.size());
-        Assert.assertEquals(100, houses.get(0).getScores().get(RouteCalculator.CALCULATOR_NAME).intValue());
-        Assert.assertEquals(0, houses.get(1).getScores().get(RouteCalculator.CALCULATOR_NAME).intValue());
+        Assert.assertEquals(0, houses.get(0).getScores().get(RouteCalculator.CALCULATOR_NAME).intValue());
+        Assert.assertEquals(100, houses.get(1).getScores().get(RouteCalculator.CALCULATOR_NAME).intValue());
     }
 
     @Test
@@ -133,9 +134,9 @@ public class ScoreHousesCommandTest extends AbstractMongoTest {
         List<House> houses = cmd.execute();
         Assert.assertNotNull(houses);
         Assert.assertEquals(4, houses.size());
-        Assert.assertEquals(0, houses.get(0).getScores().get(RouteCalculator.CALCULATOR_NAME).intValue());
-        Assert.assertEquals(20, houses.get(1).getScores().get(RouteCalculator.CALCULATOR_NAME).intValue());
-        Assert.assertEquals(70, houses.get(2).getScores().get(RouteCalculator.CALCULATOR_NAME).intValue());
-        Assert.assertEquals(100, houses.get(3).getScores().get(RouteCalculator.CALCULATOR_NAME).intValue());
+        Assert.assertEquals(100, houses.get(0).getScores().get(RouteCalculator.CALCULATOR_NAME).intValue());
+        Assert.assertEquals(80, houses.get(1).getScores().get(RouteCalculator.CALCULATOR_NAME).intValue());
+        Assert.assertEquals(30, houses.get(2).getScores().get(RouteCalculator.CALCULATOR_NAME).intValue());
+        Assert.assertEquals(0, houses.get(3).getScores().get(RouteCalculator.CALCULATOR_NAME).intValue());
     }
 }

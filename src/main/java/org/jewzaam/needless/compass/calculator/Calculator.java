@@ -56,4 +56,11 @@ public abstract class Calculator {
     public abstract String name();
 
     protected abstract long score(String owner, House house) throws Exception;
+
+    /**
+     * If a lower score is better return true, else return false.
+     *
+     * @return
+     */
+    public abstract boolean isLowerBetter();
 }

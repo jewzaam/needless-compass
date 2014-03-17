@@ -19,7 +19,6 @@ package org.jewzaam.needless.compass.calculator;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -201,13 +200,11 @@ public class RouteCalculator extends Calculator {
                 // use coordinates to get a route
                 route = new OsrmRouteCommand(coordinates).execute();
 
-                // set who/when
+                // initialize
+                route.initialize();
                 route.setOwner(owner);
                 route.setCreatedBy(owner);
                 route.setLastUpdatedBy(owner);
-                Date sysdate = new Date();
-                route.setCreationDate(sysdate);
-                route.setLastUpdateDate(sysdate);
 
                 // save route
                 crud.upsert(Route.COLLECTION, route);
@@ -220,6 +217,11 @@ public class RouteCalculator extends Calculator {
         Collections.sort(routes, new RouteTimeComparator());
 
         // first element is lowest "cost", return it
-        return routes.isEmpty() ? null : routes.get(0).getTimeSeconds();
+        return routes.isEmpty() ? -1l : routes.get(0).getTimeSeconds();
+    }
+
+    @Override
+    public boolean isLowerBetter() {
+        return true;
     }
 }

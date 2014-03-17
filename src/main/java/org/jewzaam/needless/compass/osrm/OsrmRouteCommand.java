@@ -27,12 +27,16 @@ import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.List;
 import org.jewzaam.needless.compass.osrm.model.Route;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author jewzaam
  */
 public class OsrmRouteCommand extends AbstractRouteCommand {
+    private static final Logger LOGGER = LoggerFactory.getLogger(OsrmRouteCommand.class);
+    
     private static final String OSRM_BASE_URI = "http://router.project-osrm.org/viaroute?z=0";
     private static final String OSRM_WAYPOINT_URI = "&loc=%f,%f";
     private static final String HTTP_REFERER;
@@ -47,8 +51,6 @@ public class OsrmRouteCommand extends AbstractRouteCommand {
     
     /**
      * For testing I don't want this enabled, so doing this as a quick and dirty hack.
-     * 
-     * @param value 
      */
     public static void disable() {
         disabled = true;
@@ -79,6 +81,8 @@ public class OsrmRouteCommand extends AbstractRouteCommand {
             buffUrl.append(String.format(OSRM_WAYPOINT_URI, coordinate[0], coordinate[1]));
         }
 
+        LOGGER.info("Requesting route: {}", buffUrl.toString());
+        
         URL url = new URL(buffUrl.toString());
         URLConnection con = url.openConnection();
 

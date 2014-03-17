@@ -78,6 +78,9 @@ public class ScoreHousesCommand extends HystrixCommand<List<House>> {
             for (House house : houses) {
                 // if range is 0 then the min and max are the same.. score is 100% then.
                 long score = (long) (100 * (range == 0 ? 1 : (house.getScores().get(calculator.name()) - calculator.min()) / range));
+                if (calculator.isLowerBetter() && range > 0) {
+                    score = 100 - score;
+                }
                 house.setScore(calculator.name(), score);
             }
         }

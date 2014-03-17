@@ -20,11 +20,13 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.jewzaam.mongo.MongoCRUD;
 import org.jewzaam.mongo.Result;
@@ -35,6 +37,7 @@ import org.jewzaam.needless.compass.hystrix.ScoreHousesCommand;
 import org.jewzaam.needless.compass.model.House;
 import org.jewzaam.needless.compass.model.PointOfInterest;
 import org.jewzaam.needless.compass.model.Trip;
+import org.jewzaam.needless.compass.util.HouseComparator;
 
 /**
  * Simple service to test out NewRelic custom metrics.
@@ -53,6 +56,10 @@ public class RestResource {
         PointOfInterest poi = new Gson().fromJson(jsonString, PointOfInterest.class);
         poi = new GoogleGeocodeCommand(poi).execute();
         poi.initialize(); // set when values
+        
+        if (poi.getOwner() == null || poi.getOwner().isEmpty()) {
+            poi.setOwner("default");
+        }
 
         // set _id to latitude|longitude
         if (poi.getLocation().getCoordinate() != null) {
@@ -72,10 +79,7 @@ public class RestResource {
     @Produces(MediaType.APPLICATION_JSON)
     public String addTrip(String jsonString) {
         Trip trip = new Gson().fromJson(jsonString, Trip.class);
-        trip.initialize(); // set when values
-        // TODO consider not converting to java object and blinding persist.. could be risky? (api not exposed anyway)
-        Result result = crud.upsert(Trip.COLLECTION, trip);
-        return result.isError() ? "false" : "true";
+        return String.valueOf(addTrip(trip));
     }
 
     @POST
@@ -88,20 +92,40 @@ public class RestResource {
         // TODO consider not converting to java object and blinding persist.. could be risky? (api not exposed anyway)
         boolean error = false;
         for (Trip trip : trips) {
-            trip.initialize(); // set when values
-            Result result = crud.upsert(Trip.COLLECTION, trip);
-            error &= result.isError();
+            error &= !addTrip(trip);
         }
         return error ? "false" : "true";
     }
-    
+
+    private boolean addTrip(Trip trip) {
+        trip.initialize(); // set when values
+        if (trip.getOwner() == null || trip.getOwner().isEmpty()) {
+            trip.setOwner("default");
+        }
+        trip.setId(String.format("%s|%s", trip.getOwner(), trip.getName()));
+        Result result = crud.upsert(Trip.COLLECTION, trip);
+        return !result.isError();
+    }
+
+    /**
+     * /scores?sort=ROUTE&dir=asc
+     * 
+     * @param sort - the score to sort on [optional]
+     * @param dir - the direction to sort: asc [default] or desc
+     * @return 
+     */
     @GET
     @Path("/scores")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getScores() {
+    public String getScores(@QueryParam("sort") String sort, @QueryParam("dir") String dir) {
         List<Calculator> calculators = new ArrayList<>();
         calculators.add(new RouteCalculator(crud));
         List<House> houses = new ScoreHousesCommand("default", crud, calculators).execute();
+        
+        if (sort != null)  {
+            Collections.sort(houses, new HouseComparator(sort, dir));
+        }
+        
         return new Gson().toJson(houses);
     }
 }
