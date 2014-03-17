@@ -30,6 +30,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.jewzaam.mongo.MongoCRUD;
 import org.jewzaam.mongo.Result;
+import org.jewzaam.mongo.model.geo.Point;
 import org.jewzaam.needless.compass.calculator.Calculator;
 import org.jewzaam.needless.compass.calculator.RouteCalculator;
 import org.jewzaam.needless.compass.google.GoogleGeocodeCommand;
@@ -46,7 +47,12 @@ import org.jewzaam.needless.compass.util.HouseComparator;
  */
 @Path("/nc")
 public class RestResource {
-    private static final MongoCRUD crud = new MongoCRUD("needlesscompass");
+    private static final MongoCRUD crud;
+
+    static {
+        crud = new MongoCRUD("needlesscompass");
+        crud.createIndex2dsphere(PointOfInterest.COLLECTION, Point.ATTRIBUTE_LOCATION);
+    }
 
     @POST
     @Path("/poi")
@@ -56,7 +62,7 @@ public class RestResource {
         PointOfInterest poi = new Gson().fromJson(jsonString, PointOfInterest.class);
         poi = new GoogleGeocodeCommand(poi).execute();
         poi.initialize(); // set when values
-        
+
         if (poi.getOwner() == null || poi.getOwner().isEmpty()) {
             poi.setOwner("default");
         }
@@ -109,10 +115,10 @@ public class RestResource {
 
     /**
      * /scores?sort=ROUTE&dir=asc
-     * 
+     *
      * @param sort - the score to sort on [optional]
      * @param dir - the direction to sort: asc [default] or desc
-     * @return 
+     * @return
      */
     @GET
     @Path("/scores")
@@ -121,11 +127,11 @@ public class RestResource {
         List<Calculator> calculators = new ArrayList<>();
         calculators.add(new RouteCalculator(crud));
         List<House> houses = new ScoreHousesCommand("default", crud, calculators).execute();
-        
-        if (sort != null)  {
+
+        if (sort != null) {
             Collections.sort(houses, new HouseComparator(sort, dir));
         }
-        
+
         return new Gson().toJson(houses);
     }
 }
