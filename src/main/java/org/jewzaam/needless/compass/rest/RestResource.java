@@ -21,7 +21,9 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -37,6 +39,7 @@ import org.jewzaam.needless.compass.google.GoogleGeocodeCommand;
 import org.jewzaam.needless.compass.hystrix.ScoreHousesCommand;
 import org.jewzaam.needless.compass.model.House;
 import org.jewzaam.needless.compass.model.PointOfInterest;
+import org.jewzaam.needless.compass.model.Route;
 import org.jewzaam.needless.compass.model.Trip;
 import org.jewzaam.needless.compass.util.HouseComparator;
 
@@ -54,12 +57,80 @@ public class RestResource {
         crud.createIndex2dsphere(PointOfInterest.COLLECTION, Point.ATTRIBUTE_LOCATION);
     }
 
+    private String get(String owner, String collectionName) {
+        if (owner == null || owner.isEmpty()) {
+            owner = "default";
+        }
+
+        Iterator<Map> itr = crud.find(
+                // collection
+                collectionName,
+                // query
+                String.format("{owner:%s}", owner),
+                // projection
+                null,
+                Map.class
+        );
+
+        StringBuilder buff = new StringBuilder("[");
+        while (itr.hasNext()) {
+            Map m = itr.next();
+            buff.append(crud.getConverter().toJson(m));
+            if (itr.hasNext()) {
+                buff.append(",");
+            }
+        }
+        buff.append("]");
+
+        return buff.toString();
+    }
+
+    @GET
+    @Path("/poi")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getPointsOfInterest(@QueryParam("owner") String owner) {
+        return get(owner, PointOfInterest.COLLECTION);
+    }
+
+    @GET
+    @Path("/trip")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getTrips(@QueryParam("owner") String owner) {
+        return get(owner, Trip.COLLECTION);
+    }
+
+    @GET
+    @Path("/route")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getRoutes(@QueryParam("owner") String owner) {
+        return get(owner, Route.COLLECTION);
+    }
+
+    @POST
+    @Path("/pois")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String addPointsOfInterest(String jsonString) {
+        Type type = new TypeToken<List<PointOfInterest>>() {
+        }.getType();
+        List<PointOfInterest> pois = new Gson().fromJson(jsonString, type);
+
+        boolean error = false;
+        for (PointOfInterest poi : pois) {
+            error &= !addPointOfInterest(poi);
+        }
+        return error ? "false" : "true";
+    }
+
     @POST
     @Path("/poi")
     @Produces(MediaType.APPLICATION_JSON)
-    public String addPoitnOfInterest(String jsonString) {
-        // use geocode servie to enrich point of interest
+    public String addPointOfInterest(String jsonString) {
         PointOfInterest poi = new Gson().fromJson(jsonString, PointOfInterest.class);
+        return String.valueOf(addPointOfInterest(poi));
+    }
+
+    private boolean addPointOfInterest(PointOfInterest poi) {
+        // use geocode servie to enrich point of interest
         poi = new GoogleGeocodeCommand(poi).execute();
         poi.initialize(); // set when values
 
@@ -77,7 +148,7 @@ public class RestResource {
         }
 
         Result result = crud.upsert(PointOfInterest.COLLECTION, poi);
-        return result.isError() ? "false" : "true";
+        return !result.isError();
     }
 
     @POST
