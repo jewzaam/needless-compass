@@ -73,6 +73,8 @@ public class ScoreHousesCommand extends HystrixCommand<List<House>> {
                     long score = calculator.calculate(owner, house);
                     house.putScore(calculator.name(), new Score(score, null));
                     toSave.add(house);
+                } else {
+                    calculator.cache(house.getScores().get(calculator.name()).getRaw());
                 }
             }
             houses.add(house);
