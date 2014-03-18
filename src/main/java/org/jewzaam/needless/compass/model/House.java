@@ -26,22 +26,22 @@ import java.util.Map;
 public class House extends PointOfInterest {
     public static final String CATEGORY_HOUSE = "house";
 
-    private final Map<String, Long> scores = new HashMap<>();
+    private final Map<String, Score> scores = new HashMap<>();
 
     public House() {
         addCategory(CATEGORY_HOUSE);
     }
 
-    public void setScore(String name, Long value) {
-        getScores().put(name, value);
+    public void putScore(String name, Score value) {
+        scores.put(name, value);
     }
 
     /**
-     * Map where key is name of calculator and value is the score.
+     * The scores.
      *
      * @return
      */
-    public Map<String, Long> getScores() {
+    public Map<String, Score> getScores() {
         return scores;
     }
 }

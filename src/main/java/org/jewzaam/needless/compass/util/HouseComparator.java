@@ -46,9 +46,9 @@ public class HouseComparator implements Comparator<House> {
         if (null == t1 || null == t1.getScores().get(sort)) {
             return dir * 1;
         }
-        if (t.getScores().get(sort) < t1.getScores().get(sort)) {
+        if (t.getScores().get(sort).getRaw() < t1.getScores().get(sort).getRaw()) {
             return dir * -1;
-        } else if (t.getScores().get(sort) == t1.getScores().get(sort)) {
+        } else if (t.getScores().get(sort).getRaw() == t1.getScores().get(sort).getRaw()) {
             return 0;
         } else {
             return dir * 1;

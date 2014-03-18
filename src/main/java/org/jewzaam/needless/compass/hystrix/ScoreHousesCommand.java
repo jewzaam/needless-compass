@@ -20,12 +20,15 @@ import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandKey;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import org.jewzaam.mongo.MongoCRUD;
 import org.jewzaam.needless.compass.calculator.Calculator;
 import org.jewzaam.needless.compass.model.House;
 import org.jewzaam.needless.compass.model.PointOfInterest;
+import org.jewzaam.needless.compass.model.Score;
 
 /**
  *
@@ -58,31 +61,45 @@ public class ScoreHousesCommand extends HystrixCommand<List<House>> {
         );
 
         List<House> houses = new ArrayList<>();
+        Set<House> toSave = new HashSet<>();
 
-        // run calculator for each house.
-        // each calculator will collect min, max, and total scores.
+        // Run calculator for each house where that house doesn't already have a score.
+        // Each calculator will collect min, max, and total scores.
         while (houseItr.hasNext()) {
             House house = houseItr.next();
             // process each house
             for (Calculator calculator : calculators) {
-                house.setScore(calculator.name(), calculator.calculate(owner, house));
+                if (house.getScores().get(calculator.name()) == null) {
+                    long score = calculator.calculate(owner, house);
+                    house.putScore(calculator.name(), new Score(score, null));
+                    toSave.add(house);
+                }
             }
             houses.add(house);
         }
 
-        // scores are all collected but need to adjusted as percentages
+        // Scores are all collected but need to adjusted as percentages.
         for (Calculator calculator : calculators) {
             // score = 55, min = 5, max = 105, % is 50
             // score - min / (max - min)
             double range = calculator.max() - calculator.min();
             for (House house : houses) {
                 // if range is 0 then the min and max are the same.. score is 100% then.
-                long score = (long) (100 * (range == 0 ? 1 : (house.getScores().get(calculator.name()) - calculator.min()) / range));
+                Score score = house.getScores().get(calculator.name());
+                long percentage = (long) (100 * (range == 0 ? 1 : (score.getRaw() - calculator.min()) / range));
                 if (calculator.isLowerBetter() && range > 0) {
-                    score = 100 - score;
+                    percentage = 100 - percentage;
                 }
-                house.setScore(calculator.name(), score);
+                if (score.getPercentage() == null || score.getPercentage() != percentage) {
+                    score.setPercentage(percentage);
+                    toSave.add(house);
+                }
             }
+        }
+
+        // Save houses to save the scores.
+        for (House house : toSave) {
+            crud.upsert(PointOfInterest.COLLECTION, house);
         }
 
         // return json with the best scored house first
