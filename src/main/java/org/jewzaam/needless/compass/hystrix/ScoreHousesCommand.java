@@ -54,7 +54,7 @@ public class ScoreHousesCommand extends HystrixCommand<List<House>> {
                 // collection
                 PointOfInterest.COLLECTION,
                 // query
-                String.format("{owner:%s,categories:{$in: [%s]}}", owner, House.CATEGORY_HOUSE),
+                String.format("{owner:'%s',categories:{$in: ['%s']}}", owner, House.CATEGORY_HOUSE),
                 // projection
                 null,
                 House.class

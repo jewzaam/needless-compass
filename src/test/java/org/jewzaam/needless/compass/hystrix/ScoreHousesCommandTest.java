@@ -17,12 +17,15 @@
 package org.jewzaam.needless.compass.hystrix;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.jewzaam.mongo.model.geo.Point;
 import org.jewzaam.needless.compass.AbstractMongoTest;
@@ -76,9 +79,13 @@ public class ScoreHousesCommandTest extends AbstractMongoTest {
 
         // just get a generic list, don't care what it looks like for upsert later, so can be generic map
         List data = GSON.fromJson(json, List.class);
-
+        
         for (Object obj : data) {
-            crud.upsert(collectionName, obj);
+            // in order to get the correct type of class, going to take this slow route of multiple conversions.
+            // needed because Route implements Prepareable
+            String j = GSON.toJson(obj);
+            Object o = GSON.fromJson(j, clazz);
+            crud.upsert(collectionName, o);
         }
     }
 

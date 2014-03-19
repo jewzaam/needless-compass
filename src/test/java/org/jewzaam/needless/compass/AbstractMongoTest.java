@@ -21,6 +21,7 @@ import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodProcess;
 import de.flapdoodle.embed.mongo.MongodStarter;
 import de.flapdoodle.embed.mongo.config.MongodConfig;
+import java.io.IOException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.jewzaam.mongo.Configuration;
@@ -51,7 +52,12 @@ public abstract class AbstractMongoTest {
     public static void setupClass() throws Exception {
         MongodStarter runtime = MongodStarter.getDefaultInstance();
         mongodExe = runtime.prepare(new MongodConfig(de.flapdoodle.embed.mongo.distribution.Version.V2_4_3, MONGO_PORT, false));
-        mongod = mongodExe.start();
+        try {
+            mongod = mongodExe.start();
+        } catch (IOException e) {
+            // someone probably killed the process in a breakpoint in an ide.. try again
+            mongod = mongodExe.start();
+        }
         mongo = new Mongo(IN_MEM_CONNECTION_URL);
     }
 

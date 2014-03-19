@@ -57,6 +57,13 @@ public class GoogleGeocodeCommand extends HystrixCommand<PointOfInterest> {
             throw new MalformedURLException("Unable to construct URL, must supply latitude/longitude or street address");
         }
 
+        // short cut.. if already have address, location, and name, just bail.
+        if (poi.getName() != null && !poi.getName().isEmpty()
+                && poi.getAddress() != null && !poi.getAddress().isEmpty()
+                && poi.getLocation().getCoordinate() != null && poi.getLocation().getCoordinate().length == 2) {
+            return poi;
+        }
+
         URL url = new URL(geocodeApiUrlString);
         URLConnection con = url.openConnection();
 

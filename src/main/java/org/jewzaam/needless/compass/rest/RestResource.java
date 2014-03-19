@@ -66,7 +66,7 @@ public class RestResource {
                 // collection
                 collectionName,
                 // query
-                String.format("{owner:%s}", owner),
+                String.format("{owner:'%s'}", owner),
                 // projection
                 null,
                 Map.class

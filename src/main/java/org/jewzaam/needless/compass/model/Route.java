@@ -16,17 +16,18 @@
  */
 package org.jewzaam.needless.compass.model;
 
+import java.util.Iterator;
 import java.util.List;
 import org.jewzaam.mongo.model.MongoObject;
+import org.jewzaam.mongo.model.Prepareable;
 
 /**
- * Information about the route between two points with optional waypoints. Note
- * this is not owned by anybody. If two users happen to request the same route
- * we can reuse it.
+ * Information about the route between two points with optional waypoints. Note this is not owned by anybody. If two
+ * users happen to request the same route we can reuse it.
  *
  * @author nmalik
  */
-public class Route extends MongoObject {
+public class Route extends MongoObject implements Prepareable {
     public static final String COLLECTION = "route";
 
     /**
@@ -48,6 +49,38 @@ public class Route extends MongoObject {
      * Estimated time in seconds.
      */
     private Long time_seconds;
+
+    /**
+     * Based on data in the route, generate and set an ID.
+     *
+     * @return true if enough data exist to calculate the route
+     */
+    @Override
+    public boolean prepare() {
+        if (getOwner() == null || getOwner().isEmpty()
+                || route == null || route.isEmpty()) {
+            return false;
+        }
+
+        StringBuilder buff = new StringBuilder(getOwner()).append("|");
+        Iterator<double[]> itr = route.iterator();
+        while (itr.hasNext()) {
+            double[] coordinates = itr.next();
+            for (int i = 0; i < coordinates.length; i++) {
+                buff.append(coordinates[i]);
+                if (i + 1 < coordinates.length) {
+                    buff.append(",");
+                }
+            }
+            if (itr.hasNext()) {
+                buff.append("|");
+            }
+        }
+
+        setId(buff.toString());
+
+        return true;
+    }
 
     /**
      * @return the api_request

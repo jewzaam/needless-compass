@@ -19,9 +19,11 @@ package org.jewzaam.needless.compass.calculator;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 import org.jewzaam.mongo.MongoCRUD;
 import org.jewzaam.mongo.model.geo.Shape;
@@ -39,11 +41,11 @@ import org.jewzaam.needless.compass.util.RouteTimeComparator;
  */
 public class RouteCalculator extends Calculator {
     public static final String CALCULATOR_NAME = "ROUTE";
-    
+
     private static final int FIND_POI_LIMIT = 3;
 
     private final MongoCRUD crud;
-    
+
     public RouteCalculator(MongoCRUD crud) {
         this.crud = crud;
     }
@@ -55,12 +57,17 @@ public class RouteCalculator extends Calculator {
 
     @Override
     protected long score(String owner, House house) throws IOException {
+        // process the house
+        return processHouse(owner, house);
+    }
+
+    private long processHouse(String owner, House house) throws IOException {
         // get all trips
         Iterator<Trip> tripItr = crud.find(
                 // collection
                 Trip.COLLECTION,
                 // query
-                String.format("{owner:%s}", owner),
+                String.format("{owner:'%s'}", owner),
                 // projection
                 null,
                 Trip.class
@@ -70,23 +77,17 @@ public class RouteCalculator extends Calculator {
         while (tripItr.hasNext()) {
             trips.add(tripItr.next());
         }
-
-        // process the house
-        return process(owner, house, trips);
-    }
-
-    private long process(String owner, House house, List<Trip> trips) throws IOException {
         // for each trip find closes sites that match using global limit and get a total score
         long score = 0;
         for (Trip trip : trips) {
-            RouteTree tree = process(owner, house, trip);
+            RouteTree tree = processTrip(owner, house, trip);
             score += findLowestCost(owner, tree);
         }
 
         return score;
     }
 
-    private RouteTree process(String owner, House house, Trip trip) {
+    private RouteTree processTrip(String owner, House house, Trip trip) {
         // for each trip prep a route and collect transient points
         RouteTree root = new RouteTree(null, house);
         List<RouteTree> processing = new ArrayList<>();
@@ -173,7 +174,14 @@ public class RouteCalculator extends Calculator {
             }
         }
 
-        for (RouteTree leaf : leafs) {
+        // key=id
+        Map<String, Route> searchRoutes = new HashMap<>();
+        StringBuilder buff = new StringBuilder("{$or:[");
+
+        Iterator<RouteTree> itr = leafs.iterator();
+        while (itr.hasNext()) {
+            RouteTree leaf = itr.next();
+            
             // 2. for each leaf find the route
             LinkedList<double[]> coordinates = new LinkedList<>();
 
@@ -191,24 +199,42 @@ public class RouteCalculator extends Calculator {
             Route search = new Route();
             search.setOwner(owner);
             search.setRoute(coordinates);
-
-            // see if route is saved already
-            Route route = crud.findOne(Route.COLLECTION, search);
-
-            // 3.2. if route does not exist, create route and save
-            if (null == route) {
-                // use coordinates to get a route
-                route = new OsrmRouteCommand(coordinates).execute();
-
-                // initialize
-                route.initialize();
-                route.setOwner(owner);
-                route.setCreatedBy(owner);
-                route.setLastUpdatedBy(owner);
-
-                // save route
-                crud.upsert(Route.COLLECTION, route);
+            
+            // force id to be generated
+            search.prepare();
+            
+            searchRoutes.put(search.getId(), search);
+            
+            buff.append("{_id:'").append(search.getId()).append("'}");
+            
+            if (itr.hasNext()) {
+                buff.append(",");
             }
+        }
+        buff.append("]}");
+
+        Iterator<Route> itrRoute = crud.find(Route.COLLECTION, buff.toString(), null, Route.class);
+
+        while (itrRoute.hasNext()) {
+            // for each route found add it to the routes list and remove it from the search list
+            Route route = itrRoute.next();
+            routes.add(route);
+            searchRoutes.remove(route.getId());
+        }
+
+        // for the routes still in the search set we need to look things up
+        for (Route search : searchRoutes.values()) {
+            // use coordinates to get a route
+            Route route = new OsrmRouteCommand(search.getRoute()).execute();
+
+            // initialize
+            route.initialize();
+            route.setOwner(owner);
+            route.setCreatedBy(owner);
+            route.setLastUpdatedBy(owner);
+
+            // save route
+            crud.upsert(Route.COLLECTION, route);
 
             routes.add(route);
         }
