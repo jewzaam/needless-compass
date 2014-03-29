@@ -31,6 +31,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Route geometry encoding:
+ * <ul>
+ * <li>https://developers.google.com/maps/documentation/utilities/polylinealgorithm?csw=1</li>
+ * <li>https://github.com/DennisOSRM/Project-OSRM/wiki/Server-api</li>
+ * <li>https://github.com/DennisSchiefer/Project-OSRM-Web/blob/develop/WebContent/routing/OSRM.RoutingGeometry.js</li>
+ * </ul>
  *
  * @author jewzaam
  */
@@ -50,8 +56,7 @@ public class OsrmRouteCommand extends AbstractRouteCommand {
     }
 
     /**
-     * For testing I don't want this enabled, so doing this as a quick and dirty
-     * hack.
+     * For testing I don't want this enabled, so doing this as a quick and dirty hack.
      */
     public static void disable() {
         disabled = true;
