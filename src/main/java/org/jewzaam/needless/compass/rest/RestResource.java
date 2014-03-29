@@ -32,7 +32,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.jewzaam.mongo.MongoCRUD;
 import org.jewzaam.mongo.Result;
-import org.jewzaam.mongo.model.geo.Point;
+import org.jewzaam.mongo.model.geojson.Feature;
 import org.jewzaam.needless.compass.calculator.Calculator;
 import org.jewzaam.needless.compass.calculator.RouteCalculator;
 import org.jewzaam.needless.compass.google.GoogleGeocodeCommand;
@@ -54,19 +54,41 @@ public class RestResource {
 
     static {
         crud = new MongoCRUD("needlesscompass");
-        crud.createIndex2dsphere(PointOfInterest.COLLECTION, Point.ATTRIBUTE_LOCATION);
+        crud.createIndex2dsphere(PointOfInterest.COLLECTION, Feature.ATTRIBUTE_GEOMETRY);
     }
 
     private String get(String owner, String collectionName) {
+        return get(owner, collectionName, null);
+    }
+
+    /**
+     *
+     * @param owner
+     * @param collectionName
+     * @param queryAdditions key is name of field to add to query string, value
+     * is the raw bson query (json) for that key
+     * @return
+     */
+    private String get(String owner, String collectionName, Map<String, String> queryAdditions) {
         if (owner == null || owner.isEmpty()) {
             owner = "default";
         }
+
+        StringBuilder query = new StringBuilder("{owner:'%s'");
+
+        if (queryAdditions != null) {
+            for (String key : queryAdditions.keySet()) {
+                query.append(",").append(key).append(":").append(queryAdditions.get(key));
+            }
+        }
+
+        query.append("}");
 
         Iterator<Map> itr = crud.find(
                 // collection
                 collectionName,
                 // query
-                String.format("{owner:'%s'}", owner),
+                String.format(query.toString(), owner),
                 // projection
                 null,
                 Map.class
@@ -88,7 +110,8 @@ public class RestResource {
     @GET
     @Path("/poi")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getPointsOfInterest(@QueryParam("owner") String owner) {
+    public String getPointsOfInterest(@QueryParam("owner") String owner,
+            @QueryParam("category") String category) {
         return get(owner, PointOfInterest.COLLECTION);
     }
 
@@ -139,11 +162,12 @@ public class RestResource {
         }
 
         // set _id to latitude|longitude
-        if (poi.getLocation().getCoordinate() != null) {
+        double[] coordinate = poi.getCoordinates();
+        if (coordinate != null) {
             poi.setId(String.format("%s|%f|%f",
                     poi.getOwner(),
-                    poi.getLocation().getCoordinate()[0],
-                    poi.getLocation().getCoordinate()[1])
+                    coordinate[0],
+                    coordinate[1])
             );
         }
 

@@ -4,7 +4,7 @@
         "categories": ["house"],
         "name": "Lot near Lake Benson",
         "address": "8004 Lake Shore Drive, Garner, NC 27529, USA",
-        "loc": {
+        "geometry": {
             "coordinates": [35.662709, -78.63383600000002],
             "type": "Point"
         },
@@ -18,7 +18,7 @@
         "categories": ["coffee"],
         "name": "Aversboro Coffee",
         "address": "1401 Aversboro Road, Garner, NC 27529, USA",
-        "loc": {
+        "geometry": {
             "coordinates": [35.694968, -78.616082],
             "type": "Point"
         },
@@ -32,7 +32,7 @@
         "categories": ["coffee"],
         "name": "New World Coffee House",
         "address": "4112 Pleasant Valley Road #124, Raleigh, NC 27612, USA",
-        "loc": {
+        "geometry": {
             "coordinates": [35.860437, -78.7047259],
             "type": "Point"
         },

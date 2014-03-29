@@ -58,9 +58,10 @@ public class GoogleGeocodeCommand extends HystrixCommand<PointOfInterest> {
         }
 
         // short cut.. if already have address, location, and name, just bail.
+        double[] coordinates = poi.getCoordinates();
         if (poi.getName() != null && !poi.getName().isEmpty()
                 && poi.getAddress() != null && !poi.getAddress().isEmpty()
-                && poi.getLocation().getCoordinate() != null && poi.getLocation().getCoordinate().length == 2) {
+                && coordinates != null && coordinates.length == 2) {
             return poi;
         }
 
@@ -94,7 +95,7 @@ public class GoogleGeocodeCommand extends HystrixCommand<PointOfInterest> {
             poi.setName(result.getFormattedAddress());
         }
         poi.setAddress(result.getFormattedAddress());
-        poi.getLocation().setCoordinate(new double[]{
+        poi.setCoordinates(new double[]{
             Double.parseDouble(result.getGeometry().getLocation().getLat()),
             Double.parseDouble(result.getGeometry().getLocation().getLng())
         });

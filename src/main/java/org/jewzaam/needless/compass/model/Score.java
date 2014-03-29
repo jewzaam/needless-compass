@@ -17,8 +17,8 @@
 package org.jewzaam.needless.compass.model;
 
 /**
- * A single score with raw value and a percentage value. Percentage value is for convenience and should be recalculated
- * as needed.
+ * A single score with raw value and a percentage value. Percentage value is for
+ * convenience and should be recalculated as needed.
  *
  * @author nmalik
  */

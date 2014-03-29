@@ -22,8 +22,9 @@ import org.jewzaam.mongo.model.MongoObject;
 import org.jewzaam.mongo.model.Prepareable;
 
 /**
- * Information about the route between two points with optional waypoints. Note this is not owned by anybody. If two
- * users happen to request the same route we can reuse it.
+ * Information about the route between two points with optional waypoints. Note
+ * this is not owned by anybody. If two users happen to request the same route
+ * we can reuse it.
  *
  * @author nmalik
  */

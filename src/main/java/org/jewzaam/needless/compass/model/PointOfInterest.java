@@ -18,19 +18,25 @@ package org.jewzaam.needless.compass.model;
 
 import java.util.HashSet;
 import java.util.Set;
-import org.jewzaam.mongo.model.geo.Point;
+import org.jewzaam.mongo.model.geojson.Feature;
+import org.jewzaam.mongo.model.geojson.Geometry;
+import org.jewzaam.mongo.model.geojson.LocationType;
 
 /**
  *
  * @author nmalik
  */
-public class PointOfInterest extends Point {
+public class PointOfInterest extends Feature<double[]> {
     public static final String COLLECTION = "poi";
     public static final String ATTRIBUTE_CATEGORIES = "categories";
 
     private final Set<String> categories = new HashSet<>();
     private String name;
     private String address;
+
+    public PointOfInterest() {
+        super(new Geometry<double[]>(LocationType.Point));
+    }
 
     public void addCategory(String category) {
         categories.add(category);

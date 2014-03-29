@@ -30,7 +30,8 @@ import org.junit.After;
 import org.junit.Before;
 
 /**
- * Base class for any test that wants to use the embedded monto database flapdoodle.
+ * Base class for any test that wants to use the embedded monto database
+ * flapdoodle.
  *
  * @author jewzaam
  */

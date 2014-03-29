@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 public class OsrmRouteCommand extends AbstractRouteCommand {
     private static final Logger LOGGER = LoggerFactory.getLogger(OsrmRouteCommand.class);
-    
+
     private static final String OSRM_BASE_URI = "http://router.project-osrm.org/viaroute?z=0";
     private static final String OSRM_WAYPOINT_URI = "&loc=%f,%f";
     private static final String HTTP_REFERER;
@@ -48,14 +48,15 @@ public class OsrmRouteCommand extends AbstractRouteCommand {
         }
         HTTP_REFERER = String.format("http://%s/", hostname);
     }
-    
+
     /**
-     * For testing I don't want this enabled, so doing this as a quick and dirty hack.
+     * For testing I don't want this enabled, so doing this as a quick and dirty
+     * hack.
      */
     public static void disable() {
         disabled = true;
     }
-    
+
     private static boolean disabled = false;
 
     public OsrmRouteCommand(List<double[]> coordinates) {
@@ -67,7 +68,7 @@ public class OsrmRouteCommand extends AbstractRouteCommand {
         if (disabled) {
             throw new IllegalStateException("is disabled, shouldn't see any executions");
         }
-        
+
         if (null == getCoordinates() || getCoordinates().size() < 2) {
             throw new MalformedURLException("Unable to construct URL, must at least two coordinates");
         }
@@ -82,7 +83,7 @@ public class OsrmRouteCommand extends AbstractRouteCommand {
         }
 
         LOGGER.info("Requesting route: {}", buffUrl.toString());
-        
+
         URL url = new URL(buffUrl.toString());
         URLConnection con = url.openConnection();
 

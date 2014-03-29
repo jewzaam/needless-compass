@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import org.jewzaam.mongo.MongoCRUD;
-import org.jewzaam.mongo.model.geo.Shape;
+import org.jewzaam.mongo.model.geojson.Feature;
 import org.jewzaam.needless.compass.model.House;
 import org.jewzaam.needless.compass.model.PointOfInterest;
 import org.jewzaam.needless.compass.model.Route;
@@ -125,14 +125,15 @@ public class RouteCalculator extends Calculator {
      */
     private void addChildren(String owner, RouteTree parent, String categoryName) {
         // get POI near last coordinates
+        double[] coordinates = parent.poi.getCoordinates();
         Iterator<PointOfInterest> poiItr = crud.find(
                 // collection
                 PointOfInterest.COLLECTION,
                 // query
                 String.format("{%s:{$near:{$geometry:{type:'Point',coordinates:[%f,%f]}}},owner:'%s',categories:{$in:['%s']}}",
-                        Shape.ATTRIBUTE_LOCATION, // location attribute
-                        parent.poi.getLocation().getCoordinate()[0], // lat
-                        parent.poi.getLocation().getCoordinate()[1], // long
+                        Feature.ATTRIBUTE_GEOMETRY, // location attribute
+                        coordinates[0], // lat
+                        coordinates[1], // long
                         owner,
                         categoryName
                 ),
@@ -181,17 +182,17 @@ public class RouteCalculator extends Calculator {
         Iterator<RouteTree> itr = leafs.iterator();
         while (itr.hasNext()) {
             RouteTree leaf = itr.next();
-            
+
             // 2. for each leaf find the route
             LinkedList<double[]> coordinates = new LinkedList<>();
 
             // for each leaf node collect the locations as coordinates
-            coordinates.addFirst(leaf.poi.getLocation().getCoordinate());
+            coordinates.addFirst((double[]) leaf.poi.getCoordinates());
 
             // grab the coordinates of each ancestor
             RouteTree current = leaf;
             while (current.parent != null) {
-                coordinates.addFirst(current.parent.poi.getLocation().getCoordinate());
+                coordinates.addFirst((double[]) current.parent.poi.getCoordinates());
                 current = current.parent;
             }
 
@@ -199,14 +200,14 @@ public class RouteCalculator extends Calculator {
             Route search = new Route();
             search.setOwner(owner);
             search.setRoute(coordinates);
-            
+
             // force id to be generated
             search.prepare();
-            
+
             searchRoutes.put(search.getId(), search);
-            
+
             buff.append("{_id:'").append(search.getId()).append("'}");
-            
+
             if (itr.hasNext()) {
                 buff.append(",");
             }

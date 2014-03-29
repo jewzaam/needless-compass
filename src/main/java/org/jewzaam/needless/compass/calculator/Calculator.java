@@ -29,7 +29,8 @@ public abstract class Calculator {
     private long count = 0l;
 
     /**
-     * Runs the calculation. If a calculation isn't run but you want to account for a cached value use the cache() api.
+     * Runs the calculation. If a calculation isn't run but you want to account
+     * for a cached value use the cache() api.
      *
      * @param owner
      * @param house
