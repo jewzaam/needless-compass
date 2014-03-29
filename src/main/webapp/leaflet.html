@@ -1,0 +1,62 @@
+<!--
+  Copyright (C) 2014 Naveen Malik
+ 
+  Needless Compass is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+ 
+  Needless Compass is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+ 
+  You should have received a copy of the GNU General Public License
+  along with Needless Compass.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Needless Compass</title>
+        <!-- icon source: http://4vector.com/free-vector/compass-rose-98397 -->
+        <link rel="shortcut icon" href="images/compass_rose.ico"/>
+        <link rel="stylesheet" href="css/styles.css"/>
+        <link rel="stylesheet" href="style.css" type="text/css"/>
+        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+        <script type="text/javascript">
+            var map;
+            var ajaxRequest;
+            var plotlist;
+            var plotlayers = [];
+
+            function initmap() {
+                // set up the map
+                map = new L.Map('map');
+
+                // create the tile layer with correct attribution
+                var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+                var osmAttrib = 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
+                var osm = new L.TileLayer(osmUrl, {minZoom: 8, maxZoom: 12, attribution: osmAttrib});
+
+                // start the map in South-East England
+                map.setView(new L.LatLng(51.3, 0.7), 9);
+                map.addLayer(osm);
+            }
+        </script>
+    </head>
+    <body>
+        Needless Compass: Leaflet POC<br/>
+        <hr/>
+        <div id="map" class="map" style="height: 180px"></div>
+        <footer>
+            <hr>
+            <a href="https://github.com/jewzaam/needless-compass">Source Code</a> | 
+            <a href="http://www.gnu.org/licenses/gpl.txt">GPLv3 license</a> | 
+            <a href="http://opendatacommons.org/lice nses/odbl/">Data License: ODbL</a> |
+            <a href="http://project-osrm.org/">Routes: OSRM</a>
+        </footer>
+        <script>initmap();</script>
+    </body>
+</html>
